@@ -268,7 +268,7 @@ END:VCARD`;
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-sm">
             <DialogHeader>
               <DialogTitle>Scan QR Code</DialogTitle>
               <DialogDescription>
@@ -276,7 +276,7 @@ END:VCARD`;
               </DialogDescription>
             </DialogHeader>
             <div className="flex items-center justify-center p-4 bg-white rounded-lg">
-              <Image src={qrUrl} alt="vCard QR Code" width={250} height={250} />
+              <Image src={qrUrl} alt="vCard QR Code" width={250} height={250} className="h-auto w-full max-w-[250px]" />
             </div>
           </DialogContent>
         </Dialog>
@@ -363,7 +363,7 @@ function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: (
             </AlertDialogContent>
           </AlertDialog>
           
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-sm">
             <DialogHeader>
               <DialogTitle>{ticket.eventName} Ticket</DialogTitle>
               <DialogDescription>
@@ -371,7 +371,7 @@ function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: (
               </DialogDescription>
             </DialogHeader>
             <div className="flex items-center justify-center p-4 bg-white rounded-lg">
-              <Image src={qrUrl} alt="Ticket QR Code" width={250} height={250} />
+              <Image src={qrUrl} alt="Ticket QR Code" width={250} height={250} className="h-auto w-full max-w-[250px]" />
             </div>
           </DialogContent>
         </Dialog>

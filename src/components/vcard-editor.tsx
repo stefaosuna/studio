@@ -11,17 +11,22 @@ import { VCardForm } from './vcard-form';
 import { IphoneMockup } from './iphone-mockup';
 import type { VCard } from '@/lib/types';
 
+const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
 const formSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   jobTitle: z.string().optional(),
   company: z.string().optional(),
   department: z.string().optional(),
+  bio: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email('Invalid email address').optional(),
   website: z.string().url('Invalid URL').optional(),
   address: z.string().optional(),
   profileImageUrl: z.string().url('Invalid URL').optional(),
+  primaryColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+  secondaryColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
   socials: z.array(z.object({
     id: z.string(),
     network: z.enum(['website', 'linkedin', 'twitter', 'github', 'instagram', 'facebook']),
@@ -49,6 +54,9 @@ export function VCardEditor({ vcardId }: { vcardId?: string }) {
       website: '',
       address: '',
       profileImageUrl: 'https://placehold.co/200x200.png',
+      bio: '',
+      primaryColor: '#042f2c',
+      secondaryColor: '#ffffff',
       socials: [],
     },
   });
@@ -73,6 +81,9 @@ export function VCardEditor({ vcardId }: { vcardId?: string }) {
         website: values.website || '',
         address: values.address || '',
         profileImageUrl: values.profileImageUrl || 'https://placehold.co/200x200.png',
+        bio: values.bio || '',
+        primaryColor: values.primaryColor || '#042f2c',
+        secondaryColor: values.secondaryColor || '#FFFFFF',
         socials: values.socials || [],
     };
     if (vcardId && existingVCard) {

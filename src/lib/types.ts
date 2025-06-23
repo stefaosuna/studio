@@ -19,6 +19,9 @@ export interface VCard {
   address: string;
   socials: SocialLink[];
   profileImageUrl: string;
+  bio: string;
+  primaryColor: string;
+  secondaryColor: string;
 }
 
 export type PassType = 'VIP' | 'Basic' | 'Staff';

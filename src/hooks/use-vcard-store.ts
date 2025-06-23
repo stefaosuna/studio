@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { VCard } from '@/lib/types';
 import { toast } from './use-toast';
 
-const VCARDS_STORAGE_KEY = 'cardify-vcards';
+const VCARDS_STORAGE_KEY = 'proxity-vcards';
 
 const initialData: VCard[] = [
   {

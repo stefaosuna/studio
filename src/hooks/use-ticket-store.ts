@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { EventTicket } from '@/lib/types';
 import { toast } from './use-toast';
 
-const TICKETS_STORAGE_KEY = 'cardify-tickets';
+const TICKETS_STORAGE_KEY = 'proxity-tickets';
 
 const initialData: EventTicket[] = [
   {

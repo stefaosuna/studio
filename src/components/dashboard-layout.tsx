@@ -63,12 +63,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                         <SidebarMenu>
                             {menuItems.map((item) => (
                                 <SidebarMenuItem key={item.href}>
-                                    <Link href={item.href} passHref legacyBehavior>
-                                        <SidebarMenuButton isActive={isActive(item.href)} tooltip={{ children: item.tooltip }}>
+                                    <SidebarMenuButton asChild isActive={isActive(item.href)} tooltip={{ children: item.tooltip }}>
+                                        <Link href={item.href}>
                                             <item.icon />
                                             <span>{item.label}</span>
-                                        </SidebarMenuButton>
-                                    </Link>
+                                        </Link>
+                                    </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>

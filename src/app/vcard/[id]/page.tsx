@@ -7,17 +7,20 @@ import { VCardPublicView } from '@/components/vcard-public-view';
 import type { VCard } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useParams } from 'next/navigation';
 
-export default function VCardPage({ params }: { params: { id: string } }) {
+export default function VCardPage() {
+  const params = useParams();
+  const id = params.id as string;
   const { getVCardById, isLoaded } = useVCardStore();
   const [vcard, setVCard] = useState<VCard | undefined>(undefined);
   
   useEffect(() => {
     if (isLoaded) {
-      const card = getVCardById(params.id);
+      const card = getVCardById(id);
       setVCard(card);
     }
-  }, [params.id, getVCardById, isLoaded]);
+  }, [id, getVCardById, isLoaded]);
 
   if (!isLoaded) {
     return (

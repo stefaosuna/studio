@@ -1,17 +1,14 @@
-import { Header } from "@/components/header";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { MainDashboard } from "@/components/main-dashboard";
 import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <Header />
-      <main className="flex-1 bg-muted/20">
-        <Suspense fallback={<DashboardSkeleton />}>
-           <MainDashboard />
-        </Suspense>
-      </main>
-    </div>
+    <DashboardLayout>
+      <Suspense fallback={<DashboardSkeleton />}>
+        <MainDashboard />
+      </Suspense>
+    </DashboardLayout>
   );
 }
 

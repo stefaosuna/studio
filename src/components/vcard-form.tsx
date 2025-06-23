@@ -233,12 +233,55 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                 <AccordionContent className="pt-6 space-y-4">
                     {fields.map((field, index) => (
                         <div key={field.id} className="flex items-end gap-2 p-4 border rounded-md relative">
-                            <FormField control={form.control} name={`socials.${index}.network`} render={({ field }) => ( <FormItem className="w-1/3"> <FormLabel>Network</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}> <FormControl> <SelectTrigger> <SelectValue placeholder="Select network" /> </SelectTrigger> </FormControl> <SelectContent> {Object.keys(socialIcons).map(network => ( <SelectItem key={network} value={network}> <div className="flex items-center gap-2"> {React.createElement(socialIcons[network as SocialNetwork], { className: "w-4 h-4" })} <span>{network.charAt(0).toUpperCase() + network.slice(1)}</span> </div> </SelectItem> ))} </SelectContent> </Select> <FormMessage /> </FormItem> )} />
-                            <FormField control={form.control} name={`socials.${index}.url`} render={({ field }) => ( <FormItem className="flex-1"> <FormLabel>URL</FormLabel> <FormControl> <Input placeholder="https://..." {...field} /> </FormControl> <FormMessage /> </FormItem> )} />
-                            <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}> <Trash2 className="h-4 w-4 text-destructive" /> </Button>
+                            <FormField
+                                control={form.control}
+                                name={`socials.${index}.network`}
+                                render={({ field }) => (
+                                    <FormItem className="w-1/3">
+                                        <FormLabel>Network</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select network" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {Object.keys(socialIcons).map(network => (
+                                                        <SelectItem key={network} value={network}>
+                                                            <div className="flex items-center gap-2">
+                                                                {React.createElement(socialIcons[network as SocialNetwork], { className: "w-4 h-4" })}
+                                                                <span>{network.charAt(0).toUpperCase() + network.slice(1)}</span>
+                                                            </div>
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name={`socials.${index}.url`}
+                                render={({ field }) => (
+                                    <FormItem className="flex-1">
+                                        <FormLabel>URL</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="https://..." {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" onClick={() => append({ id: new Date().toISOString(), network: 'website', url: '' })} className='w-full' > <PlusCircle className="mr-2 h-4 w-4" /> Add Social Link </Button>
+                    <Button type="button" variant="outline" onClick={() => append({ id: new Date().toISOString(), network: 'website', url: '' })} className='w-full' >
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Add Social Link
+                    </Button>
                 </AccordionContent>
             </div>
           </AccordionItem>

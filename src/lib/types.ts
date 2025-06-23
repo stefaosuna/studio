@@ -20,3 +20,13 @@ export interface VCard {
   socials: SocialLink[];
   profileImageUrl: string;
 }
+
+export type PassType = 'VIP' | 'Basic' | 'Staff';
+
+export interface EventTicket {
+  id: string;
+  eventName: string;
+  eventDate: Date;
+  ownerName: string;
+  passType: PassType;
+}

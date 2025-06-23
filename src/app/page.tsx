@@ -1,14 +1,14 @@
 import { Header } from "@/components/header";
-import { VCardDashboard } from "@/components/vcard-dashboard";
+import { MainDashboard } from "@/components/main-dashboard";
 import { Suspense } from "react";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 bg-muted/20">
         <Suspense fallback={<DashboardSkeleton />}>
-           <VCardDashboard />
+           <MainDashboard />
         </Suspense>
       </main>
     </div>
@@ -24,6 +24,10 @@ function DashboardSkeleton() {
           <div className="h-10 w-32 rounded-md bg-muted"></div>
         </div>
         <div className="mt-8 h-96 w-full rounded-lg border bg-card"></div>
+        <div className="mt-12">
+            <div className="h-10 w-48 rounded-md bg-muted"></div>
+            <div className="mt-8 h-96 w-full rounded-lg border bg-card"></div>
+        </div>
       </div>
     </div>
   )

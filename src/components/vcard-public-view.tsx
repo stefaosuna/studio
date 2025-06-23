@@ -178,7 +178,7 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
             <p className="text-sm text-muted-foreground">
                 Powered by{' '}
                 <Link href="/" className="font-medium text-primary hover:underline">
-                    Proxity
+                    Cardify
                 </Link>
             </p>
         </footer>

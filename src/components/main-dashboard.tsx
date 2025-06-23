@@ -1,9 +1,10 @@
+
 "use client"
 
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers } from "lucide-react";
+import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers, ExternalLink } from "lucide-react";
 import { useVCardStore } from "@/hooks/use-vcard-store";
 import { useTicketStore } from "@/hooks/use-ticket-store";
 import { Button } from "@/components/ui/button";
@@ -226,6 +227,12 @@ END:VCARD`;
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/vcard/${vcard.id}`}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    View Card
+                  </Link>
+                </DropdownMenuItem>
                 <DialogTrigger asChild>
                   <DropdownMenuItem>
                     <QrCode className="mr-2 h-4 w-4" />

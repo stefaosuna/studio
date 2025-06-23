@@ -45,7 +45,7 @@ const formSchema = z.object({
 
 type VCardFormProps = {
   form: UseFormReturn<z.infer<typeof formSchema>>;
-  onSubmit: (values: z.infer<typeof formSchema>>) => void;
+  onSubmit: (values: z.infer<typeof formSchema>) => void;
   isEditing: boolean;
 };
 

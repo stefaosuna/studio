@@ -5,7 +5,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers, ExternalLink } from "lucide-react";
+import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers, ExternalLink, CreditCard } from "lucide-react";
 import { useVCardStore } from "@/hooks/use-vcard-store";
 import { useTicketStore } from "@/hooks/use-ticket-store";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/dialog";
 import type { VCard, EventTicket } from "@/lib/types";
 import { Badge } from "./ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { format } from "date-fns";
 import { TicketMockup } from "./ticket-mockup";
 import { useSearch } from "@/context/search-context";
@@ -71,6 +72,28 @@ export function MainDashboard() {
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 space-y-12">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total vCards</CardTitle>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{vcards.length}</div>
+            <p className="text-xs text-muted-foreground">Total vCards created in your account.</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Tickets</CardTitle>
+            <Ticket className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{tickets.length}</div>
+            <p className="text-xs text-muted-foreground">Total event tickets currently active.</p>
+          </CardContent>
+        </Card>
+      </div>
       <VCardSection vcards={filteredVcards} />
       <TicketSection tickets={filteredTickets} />
     </div>

@@ -12,6 +12,7 @@ export interface VCard {
   lastName: string;
   jobTitle: string;
   company: string;
+  department: string;
   phone: string;
   email: string;
   website: string;

@@ -14,7 +14,7 @@ const socialIcons: Record<SocialNetwork, React.ComponentType<{ className?: strin
 };
 
 export function IphoneMockup({ vcard }: { vcard: Partial<VCard> }) {
-  const { firstName, lastName, jobTitle, company, email, phone, website, address, socials, profileImageUrl } = vcard;
+  const { firstName, lastName, jobTitle, company, email, phone, website, address, socials, profileImageUrl, department } = vcard;
   const fullName = `${firstName || 'First'} ${lastName || 'Last'}`;
   
   return (
@@ -41,6 +41,7 @@ export function IphoneMockup({ vcard }: { vcard: Partial<VCard> }) {
                 <h2 className="text-2xl font-bold text-foreground">{fullName}</h2>
                 <p className="text-md text-muted-foreground">{jobTitle || 'Job Title'}</p>
                 <p className="text-md text-muted-foreground">{company || 'Company Name'}</p>
+                <p className="text-sm text-muted-foreground">{department || 'Department'}</p>
             </div>
             
             <div className="px-4 space-y-3 mt-4">

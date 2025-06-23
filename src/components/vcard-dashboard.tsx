@@ -107,12 +107,13 @@ function VCardTableRow({ vcard, onDelete }: { vcard: VCard, onDelete: () => void
 
   const generateVcf = (card: VCard) => {
     const socialLinks = card.socials.map(s => `URL:${s.url}`).join('\\n');
+    const orgValue = [card.company, card.department].filter(Boolean).join(';');
     return `BEGIN:VCARD
 VERSION:3.0
 N:${card.lastName};${card.firstName}
 FN:${card.firstName} ${card.lastName}
 TITLE:${card.jobTitle}
-ORG:${card.company}
+ORG:${orgValue}
 TEL;TYPE=WORK,VOICE:${card.phone}
 EMAIL:${card.email}
 URL:${card.website}
@@ -139,7 +140,10 @@ END:VCARD`;
       </TableCell>
       <TableCell className="font-medium">{`${vcard.firstName} ${vcard.lastName}`}</TableCell>
       <TableCell className="hidden md:table-cell text-muted-foreground">{vcard.jobTitle}</TableCell>
-      <TableCell className="hidden lg:table-cell text-muted-foreground">{vcard.company}</TableCell>
+      <TableCell className="hidden lg:table-cell text-muted-foreground">
+        <div>{vcard.company}</div>
+        {vcard.department && <div className="text-xs text-muted-foreground/80">{vcard.department}</div>}
+      </TableCell>
       <TableCell className="text-right">
         <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
           <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

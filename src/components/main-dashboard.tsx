@@ -42,6 +42,7 @@ import {
 import type { VCard, EventTicket } from "@/lib/types";
 import { Badge } from "./ui/badge";
 import { format } from "date-fns";
+import { TicketMockup } from "./ticket-mockup";
 
 export function MainDashboard() {
   const { vcards, isLoaded: vcardsLoaded } = useVCardStore();
@@ -289,14 +290,6 @@ function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: (
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
 
-  const ticketJson = JSON.stringify({
-      ticketId: ticket.id,
-      eventName: ticket.eventName,
-      owner: ticket.ownerName,
-      pass: ticket.passType,
-  });
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(ticketJson)}`;
-
   return (
     <TableRow>
       <TableCell className="font-medium">{ticket.eventName}</TableCell>
@@ -363,16 +356,8 @@ function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: (
             </AlertDialogContent>
           </AlertDialog>
           
-          <DialogContent className="sm:max-w-sm">
-            <DialogHeader>
-              <DialogTitle>{ticket.eventName} Ticket</DialogTitle>
-              <DialogDescription>
-                Scan this code for event entry.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex items-center justify-center p-4 bg-white rounded-lg">
-              <Image src={qrUrl} alt="Ticket QR Code" width={250} height={250} className="h-auto w-full max-w-[250px]" />
-            </div>
+          <DialogContent className="w-auto p-0 bg-transparent border-none shadow-none">
+            <TicketMockup ticket={ticket} />
           </DialogContent>
         </Dialog>
       </TableCell>

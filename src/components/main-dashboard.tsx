@@ -45,19 +45,34 @@ import type { VCard, EventTicket } from "@/lib/types";
 import { Badge } from "./ui/badge";
 import { format } from "date-fns";
 import { TicketMockup } from "./ticket-mockup";
+import { useSearch } from "@/context/search-context";
 
 export function MainDashboard() {
   const { vcards, isLoaded: vcardsLoaded } = useVCardStore();
   const { tickets, isLoaded: ticketsLoaded } = useTicketStore();
+  const { searchQuery } = useSearch();
 
   if (!vcardsLoaded || !ticketsLoaded) {
     return null;
   }
+  
+  const filteredVcards = vcards.filter(vcard =>
+    `${vcard.firstName} ${vcard.lastName} ${vcard.jobTitle} ${vcard.company}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
+
+  const filteredTickets = tickets.filter(ticket =>
+    `${ticket.eventName} ${ticket.ownerName}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
+
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 space-y-12">
-      <VCardSection vcards={vcards} />
-      <TicketSection tickets={tickets} />
+      <VCardSection vcards={filteredVcards} />
+      <TicketSection tickets={filteredTickets} />
     </div>
   );
 }

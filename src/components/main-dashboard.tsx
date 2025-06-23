@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import { useState } from "react";
@@ -318,6 +319,12 @@ function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: (
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/ticket/${ticket.id}`}>
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    View Ticket
+                  </Link>
+                </DropdownMenuItem>
                 <DialogTrigger asChild>
                   <DropdownMenuItem>
                     <QrCode className="mr-2 h-4 w-4" />

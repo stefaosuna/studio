@@ -357,6 +357,12 @@ function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: (
           </AlertDialog>
           
           <DialogContent className="w-auto p-0 bg-transparent border-none shadow-none">
+            <DialogHeader className="sr-only">
+              <DialogTitle>Event Ticket</DialogTitle>
+              <DialogDescription>
+                Ticket for {ticket.eventName} for {ticket.ownerName}.
+              </DialogDescription>
+            </DialogHeader>
             <TicketMockup ticket={ticket} />
           </DialogContent>
         </Dialog>

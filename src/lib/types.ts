@@ -6,8 +6,10 @@ export interface SocialLink {
   url: string;
 }
 
+export type VCardSubscription = 'Basic' | 'Top' | 'Enterprise';
+
 export interface VCard {
-  id: string;
+  id:string;
   firstName: string;
   lastName: string;
   jobTitle: string;
@@ -22,6 +24,7 @@ export interface VCard {
   bio: string;
   primaryColor: string;
   secondaryColor: string;
+  subscription: VCardSubscription;
   tags?: string[];
 }
 

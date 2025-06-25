@@ -1,5 +1,4 @@
 
-
 "use client"
 
 import { useState, useEffect } from "react";
@@ -36,10 +35,10 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { VCard, EventTicket } from "@/lib/types";
@@ -187,6 +186,7 @@ function VCardSection({ vcards, selectedIds, onSelectionChange }: { vcards: VCar
                         <TableHead className="w-[60px]">Avatar</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead className="hidden md:table-cell">Title</TableHead>
+                        <TableHead className="hidden lg:table-cell">Subscription</TableHead>
                         <TableHead className="hidden lg:table-cell">Tags</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -374,6 +374,19 @@ END:VCARD`;
       <TableCell className="font-medium">{`${vcard.firstName} ${vcard.lastName}`}</TableCell>
       <TableCell className="hidden md:table-cell text-muted-foreground">{vcard.jobTitle}</TableCell>
       <TableCell className="hidden lg:table-cell">
+        <Badge
+          variant={
+            vcard.subscription === 'Enterprise'
+              ? 'default'
+              : vcard.subscription === 'Top'
+              ? 'secondary'
+              : 'outline'
+          }
+        >
+          {vcard.subscription}
+        </Badge>
+      </TableCell>
+      <TableCell className="hidden lg:table-cell">
         <div className="flex flex-wrap gap-1">
             {(vcard.tags || []).map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
         </div>
@@ -538,9 +551,9 @@ function TicketTableRow({ ticket, isSelected, onToggleSelect }: { ticket: EventT
             </AlertDialog>
           
           <DialogContent className="w-auto p-0 bg-transparent border-none shadow-none">
-            <DialogHeader className="sr-only">
-              <DialogTitle>Event Ticket</DialogTitle>
-              <DialogDescription>
+            <DialogHeader>
+              <DialogTitle className='sr-only'>Event Ticket</DialogTitle>
+              <DialogDescription className='sr-only'>
                 Ticket for {ticket.eventName} for {ticket.ownerName}.
               </DialogDescription>
             </DialogHeader>

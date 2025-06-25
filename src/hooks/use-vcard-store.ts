@@ -26,6 +26,7 @@ const initialData: VCard[] = [
     ],
     primaryColor: '#042f2c',
     secondaryColor: '#ffffff',
+    subscription: 'Top',
     tags: ['Lead', 'Innovate Inc.'],
   },
     {
@@ -46,6 +47,7 @@ const initialData: VCard[] = [
     ],
     primaryColor: '#527AC9',
     secondaryColor: '#7EC09F',
+    subscription: 'Enterprise',
     tags: ['Tech', 'Core'],
   }
 ];
@@ -80,8 +82,8 @@ export const useVCardStore = () => {
     return vcards.find(vcard => vcard.id === id);
   }, [vcards]);
 
-  const addVCard = (vcard: Omit<VCard, 'id' | 'tags'>) => {
-    const newVCard: VCard = { ...vcard, id: new Date().toISOString(), tags: vcard.company ? [vcard.company] : [] };
+  const addVCard = (vcard: Omit<VCard, 'id' | 'tags' | 'subscription'>) => {
+    const newVCard: VCard = { ...vcard, id: new Date().toISOString(), subscription: 'Basic', tags: vcard.company ? [vcard.company] : [] };
     const updatedVcards = [newVCard, ...vcards];
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: "vCard created successfully." });

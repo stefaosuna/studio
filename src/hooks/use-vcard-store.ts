@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
@@ -82,11 +83,10 @@ export const useVCardStore = () => {
     return vcards.find(vcard => vcard.id === id);
   }, [vcards]);
 
-  const addVCard = (vcard: Omit<VCard, 'id' | 'tags' | 'subscription'>) => {
+  const addVCard = (vcard: Omit<VCard, 'id' | 'tags'>) => {
     const newVCard: VCard = { 
       ...vcard, 
       id: new Date().toISOString(), 
-      subscription: 'Basic', 
       tags: vcard.company ? [vcard.company] : [],
     };
     const updatedVcards = [newVCard, ...vcards];

@@ -18,8 +18,8 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Linkedin, Twitter, Github, Globe, PlusCircle, Trash2, Instagram, Facebook, Palette, User, Phone, Link as LinkIcon, ImageUp, Repeat, Mail, MapPin } from 'lucide-react';
-import type { SocialNetwork } from '@/lib/types';
+import { Linkedin, Twitter, Github, Globe, PlusCircle, Trash2, Instagram, Facebook, Palette, User, Phone, Link as LinkIcon, ImageUp, Repeat, Mail, MapPin, CreditCard } from 'lucide-react';
+import type { SocialNetwork, VCardSubscription } from '@/lib/types';
 
 const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 
@@ -43,6 +43,7 @@ const formSchema = z.object({
     network: z.enum(['website', 'linkedin', 'twitter', 'github', 'instagram', 'facebook']),
     url: z.string().url('Invalid URL'),
   })).optional(),
+  subscription: z.enum(['Basic', 'Top', 'Enterprise']),
 });
 
 type VCardFormProps = {
@@ -68,6 +69,8 @@ const colorPalettes = [
   { name: 'Sunset Orange', primary: '#d35400', secondary: '#f8f9fa' },
   { name: 'Charcoal', primary: '#34495e', secondary: '#f8f9fa' },
 ];
+
+const subscriptionTypes: VCardSubscription[] = ['Basic', 'Top', 'Enterprise'];
 
 export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
   const { fields: socialFields, append: appendSocial, remove: removeSocial } = useFieldArray({
@@ -217,6 +220,30 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                                         <SelectItem value="sm">Small</SelectItem>
                                         <SelectItem value="base">Medium</SelectItem>
                                         <SelectItem value="lg">Large</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="subscription"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Subscription Plan</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a plan" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {subscriptionTypes.map(type => (
+                                            <SelectItem key={type} value={type}>
+                                                {type}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />

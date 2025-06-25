@@ -34,6 +34,7 @@ const formSchema = z.object({
     network: z.enum(['website', 'linkedin', 'twitter', 'github', 'instagram', 'facebook']),
     url: z.string().url('Invalid URL'),
   })).optional(),
+  subscription: z.enum(['Basic', 'Top', 'Enterprise']),
 });
 
 export function VCardEditor({ vcardId }: { vcardId?: string }) {
@@ -61,6 +62,7 @@ export function VCardEditor({ vcardId }: { vcardId?: string }) {
       primaryColor: '#4a00e0',
       secondaryColor: '#ffffff',
       socials: [],
+      subscription: 'Basic',
     },
   });
 
@@ -89,6 +91,7 @@ export function VCardEditor({ vcardId }: { vcardId?: string }) {
         primaryColor: values.primaryColor || '#4a00e0',
         secondaryColor: values.secondaryColor || '#FFFFFF',
         socials: values.socials || [],
+        subscription: values.subscription || 'Basic',
     };
     if (vcardId && existingVCard) {
       updateVCard(vcardId, cardData);

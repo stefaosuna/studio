@@ -20,6 +20,7 @@ const formSchema = z.object({
   passType: z.enum(['VIP', 'Basic', 'Staff'], {
     required_error: "You need to select a pass type.",
   }),
+  color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Invalid hex color').optional(),
 });
 
 export function TicketEditor({ ticketId }: { ticketId?: string }) {
@@ -35,6 +36,7 @@ export function TicketEditor({ ticketId }: { ticketId?: string }) {
       eventName: '',
       ownerName: '',
       passType: 'Basic',
+      color: '#6366f1',
     },
   });
 
@@ -75,7 +77,7 @@ export function TicketEditor({ ticketId }: { ticketId?: string }) {
         </div>
         <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-24">
-                <TicketMockup ticket={watchedData as Partial<EventTicket>} />
+                <TicketMockup ticket={watchedData as Partial<EventTicket>} showDownloadButton />
             </div>
         </div>
       </div>

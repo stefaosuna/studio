@@ -44,4 +44,5 @@ export interface EventTicket {
   ownerName: string;
   passType: PassType;
   tags?: string[];
+  color?: string;
 }

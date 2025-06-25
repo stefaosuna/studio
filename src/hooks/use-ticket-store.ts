@@ -14,6 +14,7 @@ const initialData: EventTicket[] = [
     ownerName: 'Alex Johnson',
     passType: 'VIP',
     tags: ['Conference', 'Dev'],
+    color: '#6366f1',
   },
   {
     id: 't2',
@@ -22,6 +23,7 @@ const initialData: EventTicket[] = [
     ownerName: 'Samantha Lee',
     passType: 'Basic',
     tags: ['Conference', 'Web'],
+    color: '#8b5cf6',
   },
 ];
 
@@ -62,7 +64,7 @@ export const useTicketStore = () => {
   }, [tickets]);
 
   const addTicket = (ticket: Omit<EventTicket, 'id' | 'tags'>) => {
-    const newTicket: EventTicket = { ...ticket, id: `t-${new Date().toISOString()}`, tags: [] };
+    const newTicket: EventTicket = { ...ticket, id: `t-${new Date().toISOString()}`, tags: [], color: ticket.color || '#6366f1' };
     const updatedTickets = [newTicket, ...tickets];
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket created successfully." });

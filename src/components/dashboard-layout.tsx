@@ -4,6 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Home, Users, Search, Calendar, ScanLine } from "lucide-react";
 import {
     SidebarProvider,
@@ -24,8 +25,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useState } from "react";
-import { QrScannerDialog } from "@/components/qr-scanner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+const QrScannerDialog = dynamic(() => import('@/components/qr-scanner').then(mod => mod.QrScannerDialog), { ssr: false });
 
 const logoUrl = "https://cdn.prod.website-files.com/68521b10d2ddd4340d19900c/68521c1afc95e0d7fae75898_Recurso%202%404x-p-500.png";
 
@@ -52,7 +54,7 @@ function TopBar() {
                     <SidebarTrigger />
                     {state === 'collapsed' && (
                         <Link href="/" className="hidden lg:block">
-                            <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain invert dark:invert-0" />
+                            <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain invert-0 dark:invert" />
                         </Link>
                     )}
                     <div className="relative flex-1 md:flex-initial">
@@ -93,7 +95,7 @@ function TopBar() {
                     </DropdownMenu>
                 </div>
             </header>
-            <QrScannerDialog open={isScannerOpen} onOpenChange={setIsScannerOpen} />
+            {isScannerOpen && <QrScannerDialog open={isScannerOpen} onOpenChange={setIsScannerOpen} />}
         </>
     );
 }
@@ -119,7 +121,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <SidebarHeader className="border-b">
                         <div className="flex h-16 items-center justify-start px-4">
                             <Link href="/" className="group-data-[state=collapsed]:hidden">
-                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain invert dark:invert-0" />
+                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain invert-0 dark:invert" />
                             </Link>
                         </div>
                     </SidebarHeader>

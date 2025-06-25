@@ -15,8 +15,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Textarea } from './ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Linkedin, Twitter, Github, Globe, PlusCircle, Trash2, Instagram, Facebook, Palette, User, Phone, Link as LinkIcon, ImageUp, Repeat } from 'lucide-react';
 import type { SocialNetwork } from '@/lib/types';
 

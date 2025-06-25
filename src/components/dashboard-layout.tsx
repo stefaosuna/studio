@@ -57,8 +57,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <SidebarHeader className="border-b">
                         <div className="flex h-16 items-center justify-start px-4">
                             <Link href="/">
-                                <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain group-data-[state=expanded]:hidden" />
-                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain group-data-[state=collapsed]:hidden" />
+                                <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain group-data-[state=expanded]:hidden invert dark:invert-0" />
+                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain group-data-[state=collapsed]:hidden invert dark:invert-0" />
                             </Link>
                         </div>
                     </SidebarHeader>

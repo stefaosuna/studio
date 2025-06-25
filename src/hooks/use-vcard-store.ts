@@ -26,6 +26,7 @@ const initialData: VCard[] = [
     ],
     primaryColor: '#042f2c',
     secondaryColor: '#ffffff',
+    tags: ['Lead', 'Innovate Inc.'],
   },
     {
     id: '2',
@@ -45,6 +46,7 @@ const initialData: VCard[] = [
     ],
     primaryColor: '#527AC9',
     secondaryColor: '#7EC09F',
+    tags: ['Tech', 'Core'],
   }
 ];
 
@@ -59,7 +61,6 @@ export const useVCardStore = () => {
       if (storedVcards) {
         setVcards(JSON.parse(storedVcards));
       } else {
-        // Load initial data if nothing is in storage
         setVcards(initialData);
         localStorage.setItem(VCARDS_STORAGE_KEY, JSON.stringify(initialData));
       }
@@ -79,8 +80,8 @@ export const useVCardStore = () => {
     return vcards.find(vcard => vcard.id === id);
   }, [vcards]);
 
-  const addVCard = (vcard: Omit<VCard, 'id'>) => {
-    const newVCard = { ...vcard, id: new Date().toISOString() };
+  const addVCard = (vcard: Omit<VCard, 'id' | 'tags'>) => {
+    const newVCard: VCard = { ...vcard, id: new Date().toISOString(), tags: vcard.company ? [vcard.company] : [] };
     const updatedVcards = [newVCard, ...vcards];
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: "vCard created successfully." });
@@ -100,5 +101,24 @@ export const useVCardStore = () => {
     toast({ title: "Success!", description: "vCard deleted successfully." });
   };
 
-  return { vcards, isLoaded, getVCardById, addVCard, updateVCard, deleteVCard };
+  const deleteVCards = (ids: string[]) => {
+    const updatedVcards = vcards.filter(vcard => !ids.includes(vcard.id));
+    updateStorage(updatedVcards);
+    toast({ title: "Success!", description: `${ids.length} vCard(s) deleted.` });
+  };
+  
+  const addTagsToVCards = (ids: string[], tagsToAdd: string[]) => {
+    const updatedVcards = vcards.map(vcard => {
+        if (ids.includes(vcard.id)) {
+            const existingTags = vcard.tags || [];
+            const newTags = [...new Set([...existingTags, ...tagsToAdd])];
+            return { ...vcard, tags: newTags };
+        }
+        return vcard;
+    });
+    updateStorage(updatedVcards);
+    toast({ title: "Success!", description: `Tags added to ${ids.length} vCard(s).` });
+  };
+
+  return { vcards, isLoaded, getVCardById, addVCard, updateVCard, deleteVCard, deleteVCards, addTagsToVCards };
 };

@@ -22,6 +22,7 @@ export interface VCard {
   bio: string;
   primaryColor: string;
   secondaryColor: string;
+  tags?: string[];
 }
 
 export type PassType = 'VIP' | 'Basic' | 'Staff';
@@ -32,4 +33,5 @@ export interface EventTicket {
   eventDate: Date;
   ownerName: string;
   passType: PassType;
+  tags?: string[];
 }

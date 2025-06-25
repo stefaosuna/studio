@@ -13,6 +13,7 @@ const initialData: EventTicket[] = [
     eventDate: new Date('2024-10-26T09:00:00'),
     ownerName: 'Alex Johnson',
     passType: 'VIP',
+    tags: ['Conference', 'Dev'],
   },
   {
     id: 't2',
@@ -20,6 +21,7 @@ const initialData: EventTicket[] = [
     eventDate: new Date('2024-11-15T10:00:00'),
     ownerName: 'Samantha Lee',
     passType: 'Basic',
+    tags: ['Conference', 'Web'],
   },
 ];
 
@@ -59,8 +61,8 @@ export const useTicketStore = () => {
     return tickets.find(ticket => ticket.id === id);
   }, [tickets]);
 
-  const addTicket = (ticket: Omit<EventTicket, 'id'>) => {
-    const newTicket = { ...ticket, id: `t-${new Date().toISOString()}` };
+  const addTicket = (ticket: Omit<EventTicket, 'id' | 'tags'>) => {
+    const newTicket: EventTicket = { ...ticket, id: `t-${new Date().toISOString()}`, tags: [] };
     const updatedTickets = [newTicket, ...tickets];
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket created successfully." });
@@ -80,5 +82,24 @@ export const useTicketStore = () => {
     toast({ title: "Success!", description: "Ticket deleted successfully." });
   };
 
-  return { tickets, isLoaded, getTicketById, addTicket, updateTicket, deleteTicket };
+  const deleteTickets = (ids: string[]) => {
+    const updatedTickets = tickets.filter(ticket => !ids.includes(ticket.id));
+    updateStorage(updatedTickets);
+    toast({ title: "Success!", description: `${ids.length} ticket(s) deleted successfully.` });
+  }
+
+  const addTagsToTickets = (ids: string[], tagsToAdd: string[]) => {
+    const updatedTickets = tickets.map(ticket => {
+        if (ids.includes(ticket.id)) {
+            const existingTags = ticket.tags || [];
+            const newTags = [...new Set([...existingTags, ...tagsToAdd])];
+            return { ...ticket, tags: newTags };
+        }
+        return ticket;
+    });
+    updateStorage(updatedTickets);
+    toast({ title: "Success!", description: `Tags added to ${ids.length} ticket(s).` });
+  }
+
+  return { tickets, isLoaded, getTicketById, addTicket, updateTicket, deleteTicket, deleteTickets, addTagsToTickets };
 };

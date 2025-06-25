@@ -2,10 +2,10 @@
 
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers, ExternalLink, CreditCard } from "lucide-react";
+import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers, ExternalLink, CreditCard, Mail, Tag } from "lucide-react";
 import { useVCardStore } from "@/hooks/use-vcard-store";
 import { useTicketStore } from "@/hooks/use-ticket-store";
 import { Button } from "@/components/ui/button";
@@ -47,28 +47,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { format } from "date-fns";
 import { TicketMockup } from "./ticket-mockup";
 import { useSearch } from "@/context/search-context";
+import { Checkbox } from "./ui/checkbox";
+import { toast } from "@/hooks/use-toast";
+import { Input } from "./ui/input";
 
 export function MainDashboard() {
   const { vcards, isLoaded: vcardsLoaded } = useVCardStore();
   const { tickets, isLoaded: ticketsLoaded } = useTicketStore();
   const { searchQuery } = useSearch();
 
-  if (!vcardsLoaded || !ticketsLoaded) {
-    return null;
-  }
-  
+  const [selectedVCardIds, setSelectedVCardIds] = useState<string[]>([]);
+  const [selectedTicketIds, setSelectedTicketIds] = useState<string[]>([]);
+
   const filteredVcards = vcards.filter(vcard =>
-    `${vcard.firstName} ${vcard.lastName} ${vcard.jobTitle} ${vcard.company}`
+    `${vcard.firstName} ${vcard.lastName} ${vcard.jobTitle} ${vcard.company} ${(vcard.tags || []).join(' ')}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
 
   const filteredTickets = tickets.filter(ticket =>
-    `${ticket.eventName} ${ticket.ownerName}`
+    `${ticket.eventName} ${ticket.ownerName} ${(ticket.tags || []).join(' ')}`
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    setSelectedVCardIds([]);
+    setSelectedTicketIds([]);
+  }, [searchQuery]);
+
+  if (!vcardsLoaded || !ticketsLoaded) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-8 space-y-12">
@@ -94,14 +104,55 @@ export function MainDashboard() {
           </CardContent>
         </Card>
       </div>
-      <VCardSection vcards={filteredVcards} />
-      <TicketSection tickets={filteredTickets} />
+      <VCardSection 
+        vcards={filteredVcards} 
+        selectedIds={selectedVCardIds}
+        onSelectionChange={setSelectedVCardIds}
+      />
+      <TicketSection 
+        tickets={filteredTickets} 
+        selectedIds={selectedTicketIds}
+        onSelectionChange={setSelectedTicketIds}
+      />
     </div>
   );
 }
 
-function VCardSection({ vcards }: { vcards: VCard[] }) {
-    const { deleteVCard } = useVCardStore();
+
+function BulkActionToolbar({ selectedCount, onClear, onDelete, onAddTags }: { selectedCount: number, onClear: () => void, onDelete: () => void, onAddTags: () => void }) {
+  if (selectedCount === 0) return null;
+
+  return (
+    <div className="flex items-center justify-between w-full bg-card border rounded-lg p-2 lg:p-3 my-4">
+        <div className="text-sm font-medium">
+            <span className="text-primary font-bold">{selectedCount}</span> item(s) selected
+        </div>
+        <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={onAddTags}><Tag className="mr-2 h-4 w-4" /> Add Tags</Button>
+            <Button variant="outline" size="sm" onClick={() => toast({ title: 'Feature Coming Soon', description: 'Bulk email functionality is not yet available.'})}><Mail className="mr-2 h-4 w-4" /> Send Email</Button>
+            <Button variant="destructive" size="sm" onClick={onDelete}><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+        </div>
+    </div>
+  );
+}
+
+function VCardSection({ vcards, selectedIds, onSelectionChange }: { vcards: VCard[], selectedIds: string[], onSelectionChange: (ids: string[]) => void }) {
+    const { deleteVCards, addTagsToVCards } = useVCardStore();
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+    
+    const handleDelete = () => {
+        deleteVCards(selectedIds);
+        onSelectionChange([]);
+        setIsDeleteDialogOpen(false);
+    };
+
+    const handleAddTags = (tags: string[]) => {
+        addTagsToVCards(selectedIds, tags);
+        onSelectionChange([]);
+        setIsTagDialogOpen(false);
+    }
+    
     return (
         <div>
             <div className="flex items-center justify-between gap-4">
@@ -114,21 +165,44 @@ function VCardSection({ vcards }: { vcards: VCard[] }) {
                 </Button>
             </div>
 
+            <BulkActionToolbar
+                selectedCount={selectedIds.length}
+                onClear={() => onSelectionChange([])}
+                onDelete={() => setIsDeleteDialogOpen(true)}
+                onAddTags={() => setIsTagDialogOpen(true)}
+            />
+
             {vcards.length > 0 ? (
-                <div className="mt-8 rounded-lg border bg-card">
+                <div className="mt-4 rounded-lg border bg-card">
                 <Table>
                     <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[80px]">Avatar</TableHead>
+                        <TableHead className="w-[50px]">
+                            <Checkbox
+                                checked={selectedIds.length === vcards.length && vcards.length > 0 ? true : selectedIds.length > 0 ? 'indeterminate' : false}
+                                onCheckedChange={(checked) => onSelectionChange(checked ? vcards.map(v => v.id) : [])}
+                            />
+                        </TableHead>
+                        <TableHead className="w-[60px]">Avatar</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead className="hidden md:table-cell">Title</TableHead>
-                        <TableHead className="hidden lg:table-cell">Company</TableHead>
+                        <TableHead className="hidden lg:table-cell">Tags</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                     </TableHeader>
                     <TableBody>
                     {vcards.map((vcard) => (
-                        <VCardTableRow key={vcard.id} vcard={vcard} onDelete={() => deleteVCard(vcard.id)} />
+                        <VCardTableRow 
+                            key={vcard.id} 
+                            vcard={vcard} 
+                            isSelected={selectedIds.includes(vcard.id)}
+                            onToggleSelect={() => {
+                                onSelectionChange(selectedIds.includes(vcard.id) 
+                                    ? selectedIds.filter(id => id !== vcard.id)
+                                    : [...selectedIds, vcard.id]
+                                )
+                            }}
+                        />
                     ))}
                     </TableBody>
                 </Table>
@@ -142,12 +216,29 @@ function VCardSection({ vcards }: { vcards: VCard[] }) {
                     buttonText="Create Your First vCard"
                 />
             )}
+            <DeleteConfirmationDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onConfirm={handleDelete} />
+            <AddTagsDialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen} onConfirm={handleAddTags} />
         </div>
     );
 }
 
-function TicketSection({ tickets }: { tickets: EventTicket[] }) {
-    const { deleteTicket } = useTicketStore();
+function TicketSection({ tickets, selectedIds, onSelectionChange }: { tickets: EventTicket[], selectedIds: string[], onSelectionChange: (ids: string[]) => void }) {
+    const { deleteTickets, addTagsToTickets } = useTicketStore();
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+
+    const handleDelete = () => {
+        deleteTickets(selectedIds);
+        onSelectionChange([]);
+        setIsDeleteDialogOpen(false);
+    };
+
+    const handleAddTags = (tags: string[]) => {
+        addTagsToTickets(selectedIds, tags);
+        onSelectionChange([]);
+        setIsTagDialogOpen(false);
+    }
+    
     return (
         <div>
             <div className="flex items-center justify-between gap-4">
@@ -159,22 +250,45 @@ function TicketSection({ tickets }: { tickets: EventTicket[] }) {
                 </Link>
                 </Button>
             </div>
+            
+            <BulkActionToolbar
+                selectedCount={selectedIds.length}
+                onClear={() => onSelectionChange([])}
+                onDelete={() => setIsDeleteDialogOpen(true)}
+                onAddTags={() => setIsTagDialogOpen(true)}
+            />
 
             {tickets.length > 0 ? (
-                <div className="mt-8 rounded-lg border bg-card">
+                <div className="mt-4 rounded-lg border bg-card">
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead className="w-[50px]">
+                                <Checkbox
+                                    checked={selectedIds.length === tickets.length && tickets.length > 0 ? true : selectedIds.length > 0 ? 'indeterminate' : false}
+                                    onCheckedChange={(checked) => onSelectionChange(checked ? tickets.map(t => t.id) : [])}
+                                />
+                            </TableHead>
                             <TableHead>Event</TableHead>
                             <TableHead>Owner</TableHead>
                             <TableHead className="hidden md:table-cell">Date</TableHead>
-                            <TableHead className="hidden lg:table-cell">Pass Type</TableHead>
+                            <TableHead className="hidden lg:table-cell">Tags</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                     {tickets.map((ticket) => (
-                        <TicketTableRow key={ticket.id} ticket={ticket} onDelete={() => deleteTicket(ticket.id)} />
+                        <TicketTableRow 
+                            key={ticket.id} 
+                            ticket={ticket} 
+                            isSelected={selectedIds.includes(ticket.id)}
+                             onToggleSelect={() => {
+                                onSelectionChange(selectedIds.includes(ticket.id) 
+                                    ? selectedIds.filter(id => id !== ticket.id)
+                                    : [...selectedIds, ticket.id]
+                                )
+                            }}
+                        />
                     ))}
                     </TableBody>
                 </Table>
@@ -188,6 +302,8 @@ function TicketSection({ tickets }: { tickets: EventTicket[] }) {
                     buttonText="Create Your First Ticket"
                 />
             )}
+             <DeleteConfirmationDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} onConfirm={handleDelete} itemType="tickets" />
+             <AddTagsDialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen} onConfirm={handleAddTags} />
         </div>
     );
 }
@@ -212,9 +328,11 @@ function EmptyState({ icon, title, description, buttonLink, buttonText }: { icon
     )
 }
 
-function VCardTableRow({ vcard, onDelete }: { vcard: VCard, onDelete: () => void }) {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+function VCardTableRow({ vcard, isSelected, onToggleSelect }: { vcard: VCard, isSelected: boolean, onToggleSelect: () => void }) {
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+  const { deleteVCard } = useVCardStore();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
 
   const generateVcf = (card: VCard) => {
     const socialLinks = card.socials.map(s => `URL:${s.url}`).join('\\n');
@@ -238,7 +356,10 @@ END:VCARD`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(vcfData)}`;
 
   return (
-    <TableRow>
+    <TableRow data-state={isSelected && "selected"}>
+      <TableCell>
+        <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
+      </TableCell>
       <TableCell>
         <Image
           src={vcard.profileImageUrl || "https://placehold.co/80x80.png"}
@@ -251,162 +372,169 @@ END:VCARD`;
       </TableCell>
       <TableCell className="font-medium">{`${vcard.firstName} ${vcard.lastName}`}</TableCell>
       <TableCell className="hidden md:table-cell text-muted-foreground">{vcard.jobTitle}</TableCell>
-      <TableCell className="hidden lg:table-cell text-muted-foreground">
-        <div>{vcard.company}</div>
-        {vcard.department && <div className="text-xs text-muted-foreground/80">{vcard.department}</div>}
+      <TableCell className="hidden lg:table-cell">
+        <div className="flex flex-wrap gap-1">
+            {(vcard.tags || []).map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+        </div>
       </TableCell>
       <TableCell className="text-right">
         <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href={`/vcard/${vcard.id}`}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    View Card
-                  </Link>
-                </DropdownMenuItem>
-                <DialogTrigger asChild>
-                  <DropdownMenuItem>
-                    <QrCode className="mr-2 h-4 w-4" />
-                    Show QR
-                  </DropdownMenuItem>
-                </DialogTrigger>
-                <DropdownMenuItem asChild>
-                  <Link href={`/edit/${vcard.id}`}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onSelect={() => setIsDeleteDialogOpen(true)}
-                >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete this vCard.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onDelete();
-                    setIsDeleteDialogOpen(false);
-                  }}
-                  className="bg-destructive hover:bg-destructive/90"
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <DialogContent className="sm:max-w-sm">
-            <DialogHeader>
-              <DialogTitle>Scan QR Code</DialogTitle>
-              <DialogDescription>
-                Scan this code to instantly save {vcard.firstName}'s contact details.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex items-center justify-center p-4 bg-white rounded-lg">
-              <Image src={qrUrl} alt="vCard QR Code" width={250} height={250} className="h-auto w-full max-w-[250px]" />
-            </div>
-          </DialogContent>
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                        <Link href={`/vcard/${vcard.id}`}>
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            View Card
+                        </Link>
+                        </DropdownMenuItem>
+                        <DialogTrigger asChild>
+                        <DropdownMenuItem>
+                            <QrCode className="mr-2 h-4 w-4" />
+                            Show QR
+                        </DropdownMenuItem>
+                        </DialogTrigger>
+                        <DropdownMenuItem asChild>
+                        <Link href={`/edit/${vcard.id}`}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                        </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onSelect={() => setIsDeleteDialogOpen(true)}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete this vCard.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                        onClick={(e) => {
+                            e.preventDefault();
+                            deleteVCard(vcard.id);
+                            setIsDeleteDialogOpen(false);
+                        }}
+                        className="bg-destructive hover:bg-destructive/90"
+                        >
+                        Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                <DialogTitle>Scan QR Code</DialogTitle>
+                <DialogDescription>
+                    Scan this code to instantly save {vcard.firstName}'s contact details.
+                </DialogDescription>
+                </DialogHeader>
+                <div className="flex items-center justify-center p-4 bg-white rounded-lg">
+                <Image src={qrUrl} alt="vCard QR Code" width={250} height={250} className="h-auto w-full max-w-[250px]" />
+                </div>
+            </DialogContent>
         </Dialog>
       </TableCell>
     </TableRow>
   );
 }
 
-function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: () => void }) {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+function TicketTableRow({ ticket, isSelected, onToggleSelect }: { ticket: EventTicket, isSelected: boolean, onToggleSelect: () => void }) {
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
-
+  const { deleteTicket } = useTicketStore();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  
   return (
-    <TableRow>
+    <TableRow data-state={isSelected && "selected"}>
+      <TableCell>
+        <Checkbox checked={isSelected} onCheckedChange={onToggleSelect} />
+      </TableCell>
       <TableCell className="font-medium">{ticket.eventName}</TableCell>
       <TableCell className="text-muted-foreground">{ticket.ownerName}</TableCell>
       <TableCell className="hidden md:table-cell text-muted-foreground">
         {format(new Date(ticket.eventDate), "PPP")}
       </TableCell>
       <TableCell className="hidden lg:table-cell">
-        <Badge variant={ticket.passType === 'VIP' ? 'default' : 'secondary'}>{ticket.passType}</Badge>
+        <div className="flex flex-wrap gap-1">
+            {(ticket.tags || []).map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+        </div>
       </TableCell>
       <TableCell className="text-right">
         <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href={`/ticket/${ticket.id}`}>
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    View Ticket
-                  </Link>
-                </DropdownMenuItem>
-                <DialogTrigger asChild>
-                  <DropdownMenuItem>
-                    <QrCode className="mr-2 h-4 w-4" />
-                    Show QR
-                  </DropdownMenuItem>
-                </DialogTrigger>
-                <DropdownMenuItem asChild>
-                  <Link href={`/edit/ticket/${ticket.id}`}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit
-                  </Link>
-                </DropdownMenuItem>
-                 <DropdownMenuItem
-                  className="text-destructive focus:text-destructive"
-                  onSelect={() => setIsDeleteDialogOpen(true)}
-                >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                    <Link href={`/ticket/${ticket.id}`}>
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        View Ticket
+                    </Link>
+                    </DropdownMenuItem>
+                    <DialogTrigger asChild>
+                    <DropdownMenuItem>
+                        <QrCode className="mr-2 h-4 w-4" />
+                        Show QR
+                    </DropdownMenuItem>
+                    </DialogTrigger>
+                    <DropdownMenuItem asChild>
+                    <Link href={`/edit/ticket/${ticket.id}`}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit
+                    </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                    className="text-destructive focus:text-destructive"
+                    onSelect={() => setIsDeleteDialogOpen(true)}
+                    >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+                </DropdownMenu>
 
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete this ticket.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onDelete();
-                    setIsDeleteDialogOpen(false);
-                  }}
-                  className="bg-destructive hover:bg-destructive/90"
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this ticket.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                    onClick={(e) => {
+                        e.preventDefault();
+                        deleteTicket(ticket.id);
+                        setIsDeleteDialogOpen(false);
+                    }}
+                    className="bg-destructive hover:bg-destructive/90"
+                    >
+                    Delete
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
           
           <DialogContent className="w-auto p-0 bg-transparent border-none shadow-none">
             <DialogHeader className="sr-only">
@@ -421,4 +549,61 @@ function TicketTableRow({ ticket, onDelete }: { ticket: EventTicket, onDelete: (
       </TableCell>
     </TableRow>
   );
+}
+
+function DeleteConfirmationDialog({ open, onOpenChange, onConfirm, itemType = 'vCards' }: { open: boolean, onOpenChange: (open: boolean) => void, onConfirm: () => void, itemType?: string }) {
+    return (
+        <AlertDialog open={open} onOpenChange={onOpenChange}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the selected {itemType}.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={onConfirm} className="bg-destructive hover:bg-destructive/90">
+                        Yes, delete
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+}
+
+function AddTagsDialog({ open, onOpenChange, onConfirm }: { open: boolean, onOpenChange: (open: boolean) => void, onConfirm: (tags: string[]) => void }) {
+    const [tags, setTags] = useState('');
+
+    const handleConfirm = () => {
+        const tagArray = tags.split(',').map(tag => tag.trim()).filter(Boolean);
+        if (tagArray.length > 0) {
+            onConfirm(tagArray);
+            setTags('');
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Add Tags</DialogTitle>
+                    <DialogDescription>
+                        Enter comma-separated tags to add to the selected items.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                    <Input 
+                        value={tags} 
+                        onChange={(e) => setTags(e.target.value)}
+                        placeholder="e.g. Lead, VIP, Conference"
+                    />
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+                    <Button onClick={handleConfirm}>Add Tags</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
 }

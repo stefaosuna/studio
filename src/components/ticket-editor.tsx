@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState, useMemo } from 'react';
@@ -31,7 +32,7 @@ export function TicketEditor({ ticketId }: { ticketId?: string }) {
   const eventIdFromQuery = searchParams.get('eventId');
 
   const { getTicketById, addTicket, updateTicket } = useTicketStore();
-  const { getEventById } = useEventStore();
+  const { events, getEventById } = useEventStore();
   const [isMounted, setIsMounted] = useState(false);
   
   const existingTicket = ticketId ? getTicketById(ticketId) : undefined;
@@ -99,7 +100,7 @@ export function TicketEditor({ ticketId }: { ticketId?: string }) {
     <div className="container mx-auto max-w-7xl px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 xl:gap-12">
         <div className="lg:col-span-2">
-            <TicketForm form={form} onSubmit={onSubmit} isEditing={!!ticketId} isEventContext={isEventContext} />
+            <TicketForm form={form} onSubmit={onSubmit} isEditing={!!ticketId} isEventContext={isEventContext} events={events} />
         </div>
         <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-24">

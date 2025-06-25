@@ -1,3 +1,4 @@
+
 "use client"
 
 import { format } from "date-fns";
@@ -20,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cn } from '@/lib/utils';
-import type { PassType } from "@/lib/types";
+import type { Event, PassType } from "@/lib/types";
 
 const formSchema = z.object({
   eventId: z.string().min(1, 'Event is required'),
@@ -41,6 +42,7 @@ type TicketFormProps = {
   onSubmit: (values: z.infer<typeof formSchema>) => void;
   isEditing: boolean;
   isEventContext: boolean;
+  events: Event[];
 };
 
 const passTypes: PassType[] = ['Basic', 'VIP', 'Staff'];
@@ -54,7 +56,19 @@ const colorPalettes = [
   { name: 'Amber', color: '#f59e0b' },
 ];
 
-export function TicketForm({ form, onSubmit, isEditing, isEventContext }: TicketFormProps) {
+export function TicketForm({ form, onSubmit, isEditing, isEventContext, events }: TicketFormProps) {
+
+  const handleEventChange = (eventId: string) => {
+    const selectedEvent = events.find(event => event.id === eventId);
+    if (selectedEvent) {
+      form.setValue('eventId', selectedEvent.id);
+      form.setValue('eventName', selectedEvent.name);
+      form.setValue('eventDate', new Date(selectedEvent.date));
+    }
+  };
+
+  const selectedEventId = form.watch('eventId');
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -64,19 +78,46 @@ export function TicketForm({ form, onSubmit, isEditing, isEventContext }: Ticket
             <CardDescription>{isEditing ? 'Update ticket details.' : 'Fill in the details to generate a new ticket.'}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <FormField
-              control={form.control}
-              name="eventName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Event Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Firebase Dev Summit" {...field} disabled={isEventContext || isEditing} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {isEventContext || isEditing ? (
+                <FormField
+                control={form.control}
+                name="eventName"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Event Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="e.g. Firebase Dev Summit" {...field} disabled />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            ) : (
+                <FormField
+                    control={form.control}
+                    name="eventId"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Event</FormLabel>
+                        <Select onValueChange={handleEventChange} defaultValue={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                            <SelectValue placeholder="Select an event" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {events.map(event => (
+                            <SelectItem key={event.id} value={event.id}>
+                                {event.name}
+                            </SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                     control={form.control}
@@ -106,7 +147,7 @@ export function TicketForm({ form, onSubmit, isEditing, isEventContext }: Ticket
                                     "w-full pl-3 text-left font-normal",
                                     !field.value && "text-muted-foreground"
                                 )}
-                                disabled={isEventContext || isEditing}
+                                disabled={isEventContext || isEditing || !!selectedEventId}
                                 >
                                 {field.value ? (
                                     format(field.value, "PPP")
@@ -123,7 +164,7 @@ export function TicketForm({ form, onSubmit, isEditing, isEventContext }: Ticket
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) =>
-                                isEventContext || isEditing || date < new Date(new Date().setHours(0,0,0,0))
+                                isEventContext || isEditing || !!selectedEventId || date < new Date(new Date().setHours(0,0,0,0))
                                 }
                                 initialFocus
                             />

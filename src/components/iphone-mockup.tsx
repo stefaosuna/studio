@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Phone, Mail, MapPin } from 'lucide-react';
 import type { VCard } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 // A simple utility to get a contrasting text color (black or white)
 function getContrastingTextColor(hexcolor: string | undefined): string {
@@ -20,7 +21,7 @@ function getContrastingTextColor(hexcolor: string | undefined): string {
 
 export function IphoneMockup({ vcard }: { vcard: Partial<VCard> }) {
   const { 
-      firstName, lastName, jobTitle, email, phone, address, profileImageUrl, bio,
+      firstName, lastName, jobTitle, email, phone, address, profileImageUrl, bio, bioSize,
       primaryColor = '#042f2c', 
       secondaryColor = '#FFFFFF' 
   } = vcard;
@@ -28,6 +29,12 @@ export function IphoneMockup({ vcard }: { vcard: Partial<VCard> }) {
   
   const textColor = getContrastingTextColor(primaryColor);
   const buttonIconColor = getContrastingTextColor(secondaryColor);
+
+  const bioSizeClass = {
+    sm: 'text-sm',
+    base: 'text-base',
+    lg: 'text-lg',
+  }[bioSize || 'base'];
 
   return (
     <div className="relative mx-auto h-[700px] w-[350px] rounded-[48px] border-[10px] border-gray-800 bg-gray-800 shadow-2xl">
@@ -58,7 +65,7 @@ export function IphoneMockup({ vcard }: { vcard: Partial<VCard> }) {
             </div>
             
             <div className="flex-grow px-8 pt-6 text-center">
-                <p className="text-base leading-relaxed opacity-90">{bio || "As an account manager, I thrive on building lasting relationships and helping clients to succeed. Let's connect and grow together!"}</p>
+                <p className={cn("leading-relaxed opacity-90", bioSizeClass)}>{bio || "As an account manager, I thrive on building lasting relationships and helping clients to succeed. Let's connect and grow together!"}</p>
             </div>
         </div>
       </div>

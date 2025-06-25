@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { VCard, SocialNetwork } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 const socialIcons: Record<SocialNetwork, React.ComponentType<{ className?: string }>> = {
   linkedin: Linkedin,
@@ -59,11 +60,18 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
     address,
     profileImageUrl,
     bio,
+    bioSize,
     socials,
     primaryColor = '#9F5AFF',
   } = vcard;
 
   const fullName = `${firstName} ${lastName}`;
+
+  const bioSizeClass = {
+    sm: 'text-sm',
+    base: 'text-base',
+    lg: 'text-lg',
+  }[bioSize || 'base'];
 
   const handleSaveContact = () => {
     const vcfData = generateVcf(vcard);
@@ -106,7 +114,7 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
           <p className="mt-2 text-lg text-muted-foreground">
             {jobTitle} {company && `at ${company}`}
           </p>
-          {bio && <p className="mt-4 max-w-prose text-base text-foreground/80">{bio}</p>}
+          {bio && <p className={cn("mt-4 max-w-prose text-foreground/80", bioSizeClass)}>{bio}</p>}
 
           <Button 
             onClick={handleSaveContact} 

@@ -7,6 +7,7 @@ export interface SocialLink {
 }
 
 export type VCardSubscription = 'Basic' | 'Top' | 'Enterprise';
+export type BioSize = 'sm' | 'base' | 'lg';
 
 export interface VCard {
   id:string;
@@ -22,6 +23,7 @@ export interface VCard {
   socials: SocialLink[];
   profileImageUrl: string;
   bio: string;
+  bioSize?: BioSize;
   primaryColor: string;
   secondaryColor: string;
   subscription: VCardSubscription;

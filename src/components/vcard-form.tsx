@@ -29,6 +29,7 @@ const formSchema = z.object({
   company: z.string().optional(),
   department: z.string().optional(),
   bio: z.string().optional(),
+  bioSize: z.enum(['sm', 'base', 'lg']).optional(),
   phone: z.string().optional(),
   email: z.string().email('Invalid email address').optional(),
   website: z.string().url('Invalid URL').optional(),
@@ -113,41 +114,41 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                         ))}
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4 items-center'>
-                        <FormField
-                            control={form.control}
-                            name="primaryColor"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Primary Color</FormLabel>
-                                <div className="flex items-center gap-2">
-                                    <div className="p-2 border rounded-md">
-                                        <div style={{ backgroundColor: field.value }} className="h-6 w-6 rounded-sm" />
-                                    </div>
+                      <FormField
+                        control={form.control}
+                        name="primaryColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Primary Color</FormLabel>
+                            <div className="flex items-center gap-2">
+                                <input type="color" {...field} className="h-10 w-10 p-0 rounded-md bg-transparent border-input border" />
+                                <FormControl>
                                     <Input {...field} />
-                                </div>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type='button' variant='ghost' size='icon' onClick={swapColors} className='mt-5 hidden md:block'>
-                            <Repeat className='h-5 w-5' />
-                        </Button>
-                        <FormField
-                            control={form.control}
-                            name="secondaryColor"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Secondary Color</FormLabel>
-                                <div className="flex items-center gap-2">
-                                    <div className="p-2 border rounded-md">
-                                        <div style={{ backgroundColor: field.value }} className="h-6 w-6 rounded-sm border" />
-                                    </div>
+                                </FormControl>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type='button' variant='ghost' size='icon' onClick={swapColors} className='mt-5 hidden md:block'>
+                          <Repeat className='h-5 w-5' />
+                      </Button>
+                      <FormField
+                        control={form.control}
+                        name="secondaryColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Secondary Color</FormLabel>
+                            <div className="flex items-center gap-2">
+                                <input type="color" {...field} className="h-10 w-10 p-0 rounded-md bg-transparent border-input border" />
+                                <FormControl>
                                     <Input {...field} />
-                                </div>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                </FormControl>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                 </div>
               </AccordionContent>
@@ -195,6 +196,28 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                     <FormField control={form.control} name="company" render={({ field }) => (<FormItem><FormLabel>Company</FormLabel><FormControl><Input placeholder="Innovate Inc." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="department" render={({ field }) => (<FormItem><FormLabel>Department</FormLabel><FormControl><Input placeholder="Sales" {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="bio" render={({ field }) => (<FormItem><FormLabel>Bio</FormLabel><FormControl><Textarea placeholder="A short description about you or your work..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField
+                        control={form.control}
+                        name="bioSize"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Bio Font Size</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a font size" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="sm">Small</SelectItem>
+                                        <SelectItem value="base">Medium</SelectItem>
+                                        <SelectItem value="lg">Large</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </AccordionContent>
             </div>
           </AccordionItem>

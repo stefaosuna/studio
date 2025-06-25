@@ -1,3 +1,4 @@
+
 "use client"
 
 import React from 'react';
@@ -60,12 +61,12 @@ const socialIcons: Record<SocialNetwork, React.ComponentType<{ className?: strin
 };
 
 const colorPalettes = [
-  { name: 'Emerald', primary: '#042f2c', secondary: '#ffffff' },
-  { name: 'Sapphire', primary: '#527AC9', secondary: '#7EC09F' },
-  { name: 'Amethyst', primary: '#9b59b6', secondary: '#e8daef' },
-  { name: 'Midnight', primary: '#2c3e50', secondary: '#ecf0f1' },
-  { name: 'Gold', primary: '#f39c12', secondary: '#fdebcf' },
-  { name: 'Graphite', primary: '#34495e', secondary: '#bdc3c7' },
+  { name: 'Proxity Purple', primary: '#4a00e0', secondary: '#FFFFFF' },
+  { name: 'Midnight Blue', primary: '#2c3e50', secondary: '#f8f9fa' },
+  { name: 'Forest Green', primary: '#042f2c', secondary: '#f8f9fa' },
+  { name: 'Royal Purple', primary: '#9b59b6', secondary: '#f8f9fa' },
+  { name: 'Sunset Orange', primary: '#d35400', secondary: '#f8f9fa' },
+  { name: 'Charcoal', primary: '#34495e', secondary: '#f8f9fa' },
 ];
 
 export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
@@ -119,7 +120,7 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                         name="primaryColor"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Primary Color</FormLabel>
+                            <FormLabel>Header Color</FormLabel>
                             <div className="flex items-center gap-2">
                                 <input type="color" {...field} className="h-10 w-10 p-0 rounded-md bg-transparent border-input border" />
                                 <FormControl>
@@ -138,7 +139,7 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                         name="secondaryColor"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Secondary Color</FormLabel>
+                            <FormLabel>Background Color</FormLabel>
                             <div className="flex items-center gap-2">
                                 <input type="color" {...field} className="h-10 w-10 p-0 rounded-md bg-transparent border-input border" />
                                 <FormControl>

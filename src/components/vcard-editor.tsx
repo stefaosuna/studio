@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState } from 'react';
@@ -57,7 +58,7 @@ export function VCardEditor({ vcardId }: { vcardId?: string }) {
       profileImageUrl: 'https://placehold.co/200x200.png',
       bio: '',
       bioSize: 'base',
-      primaryColor: '#042f2c',
+      primaryColor: '#4a00e0',
       secondaryColor: '#ffffff',
       socials: [],
     },
@@ -85,7 +86,7 @@ export function VCardEditor({ vcardId }: { vcardId?: string }) {
         profileImageUrl: values.profileImageUrl || 'https://placehold.co/200x200.png',
         bio: values.bio || '',
         bioSize: values.bioSize || 'base',
-        primaryColor: values.primaryColor || '#042f2c',
+        primaryColor: values.primaryColor || '#4a00e0',
         secondaryColor: values.secondaryColor || '#FFFFFF',
         socials: values.socials || [],
     };

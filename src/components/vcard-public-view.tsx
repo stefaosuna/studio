@@ -1,6 +1,7 @@
 
 'use client';
 
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -21,21 +22,30 @@ const socialIcons: Record<SocialNetwork, React.ComponentType<{ className?: strin
 };
 
 const generateVcf = (card: VCard) => {
-    const socialLinks = card.socials.map(s => `URL:${s.url}`).join('\\n');
+    const socialLinks = (card.socials || []).map(s => `URL:${s.url}`).join('\\n');
     const orgValue = [card.company, card.department].filter(Boolean).join(';');
-    return `BEGIN:VCARD
-VERSION:3.0
-N:${card.lastName};${card.firstName}
-FN:${card.firstName} ${card.lastName}
-TITLE:${card.jobTitle}
-ORG:${orgValue}
-TEL;TYPE=WORK,VOICE:${card.phone}
-EMAIL:${card.email}
-URL:${card.website}
-ADR;TYPE=HOME:;;${card.address}
-PHOTO;TYPE=JPEG:${card.profileImageUrl}
-${socialLinks}
-END:VCARD`;
+    const phones = (card.phones || []).map(p => `TEL:${p.value}`).join('\\n');
+    const emails = (card.emails || []).map(e => `EMAIL:${e.value}`).join('\\n');
+    const websites = (card.websites || []).map(w => `URL:${w.value}`).join('\\n');
+    const addresses = (card.addresses || []).map(a => `ADR;TYPE=HOME:;;${a.value}`).join('\\n');
+
+    const vcfParts = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `N:${card.lastName};${card.firstName}`,
+        `FN:${card.firstName} ${card.lastName}`,
+        `TITLE:${card.jobTitle}`,
+        `ORG:${orgValue}`,
+        phones,
+        emails,
+        websites,
+        addresses,
+        `PHOTO;TYPE=JPEG:${card.profileImageUrl}`,
+        socialLinks,
+        'END:VCARD'
+    ];
+
+    return vcfParts.filter(part => part && part.split(':')[1] !== '').join('\\n');
 };
 
 export function VCardPublicView({ vcard }: { vcard: VCard }) {
@@ -44,10 +54,10 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
     lastName,
     jobTitle,
     company,
-    email,
-    phone,
-    website,
-    address,
+    emails,
+    phones,
+    websites,
+    addresses,
     profileImageUrl,
     bio,
     bioSize,
@@ -77,10 +87,10 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
   };
   
   const contactDetails = [
-    { icon: Phone, label: 'Phone', value: phone, href: `tel:${phone}` },
-    { icon: Mail, label: 'Email', value: email, href: `mailto:${email}` },
-    { icon: MapPin, label: 'Location', value: address, href: `https://maps.google.com/?q=${encodeURIComponent(address)}`, target: '_blank' },
-    { icon: Briefcase, label: company, value: jobTitle, href: website, target: '_blank'},
+    ...(phones || []).map((p, i) => ({ icon: Phone, label: i === 0 ? 'Phone' : `Phone ${i + 1}`, value: p.value, href: `tel:${p.value}` })),
+    ...(emails || []).map((e, i) => ({ icon: Mail, label: i === 0 ? 'Email' : `Email ${i + 1}`, value: e.value, href: `mailto:${e.value}` })),
+    ...(addresses || []).map((a, i) => ({ icon: MapPin, label: i === 0 ? 'Location' : `Location ${i + 1}`, value: a.value, href: `https://maps.google.com/?q=${encodeURIComponent(a.value)}`, target: '_blank' })),
+    { icon: Briefcase, label: company, value: jobTitle, href: websites?.[0]?.value, target: '_blank'},
   ].filter(detail => detail.value);
 
   return (
@@ -106,9 +116,9 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
         </p>
 
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-5 z-10">
-          {phone && <a href={`tel:${phone}`} className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-110"><Phone className="h-6 w-6 text-gray-800" /></a>}
-          {email && <a href={`mailto:${email}`} className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-110"><Mail className="h-6 w-6 text-gray-800" /></a>}
-          {address && <a href={`https://maps.google.com/?q=${encodeURIComponent(address)}`} target="_blank" rel="noopener noreferrer" className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-110"><MapPin className="h-6 w-6 text-gray-800" /></a>}
+          {phones?.[0]?.value && <a href={`tel:${phones[0].value}`} className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-110"><Phone className="h-6 w-6 text-gray-800" /></a>}
+          {emails?.[0]?.value && <a href={`mailto:${emails[0].value}`} className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-110"><Mail className="h-6 w-6 text-gray-800" /></a>}
+          {addresses?.[0]?.value && <a href={`https://maps.google.com/?q=${encodeURIComponent(addresses[0].value)}`} target="_blank" rel="noopener noreferrer" className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg transition-transform hover:scale-110"><MapPin className="h-6 w-6 text-gray-800" /></a>}
         </div>
       </div>
       
@@ -145,6 +155,29 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
               </React.Fragment>
             ))}
           </div>
+          
+          {(websites || []).length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-xl font-bold text-gray-800">
+                My Websites
+              </h2>
+              <div className="mt-2 -mx-4">
+                {(websites || []).map((site) => (
+                  <a
+                    key={site.id}
+                    href={site.value}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 rounded-lg p-4 transition-colors hover:bg-gray-50"
+                  >
+                    <Globe className="h-8 w-8 text-gray-600" />
+                    <span className="font-semibold text-gray-800 flex-1">{site.value}</span>
+                    <ChevronRight className="h-6 w-6 text-gray-400" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {socials && socials.length > 0 && (
             <div className="mt-12">

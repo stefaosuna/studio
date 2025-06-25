@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export function IphoneMockup({ vcard }: { vcard: Partial<VCard> }) {
   const { 
-      firstName, lastName, jobTitle, email, phone, address, profileImageUrl, bio, bioSize,
+      firstName, lastName, jobTitle, emails, phones, addresses, profileImageUrl, bio, bioSize,
       primaryColor = '#4a00e0',
       secondaryColor = '#FFFFFF' 
   } = vcard;
@@ -43,9 +43,9 @@ export function IphoneMockup({ vcard }: { vcard: Partial<VCard> }) {
             </div>
             
             <div className="relative z-10 -mt-8 flex justify-center gap-4">
-                {phone && <div className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg"><Phone className="h-6 w-6 text-gray-700"/></div>}
-                {email && <div className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg"><Mail className="h-6 w-6 text-gray-700"/></div>}
-                {address && <div className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg"><MapPin className="h-6 w-6 text-gray-700"/></div>}
+                {phones?.[0]?.value && <div className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg"><Phone className="h-6 w-6 text-gray-700"/></div>}
+                {emails?.[0]?.value && <div className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg"><Mail className="h-6 w-6 text-gray-700"/></div>}
+                {addresses?.[0]?.value && <div className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-white shadow-lg"><MapPin className="h-6 w-6 text-gray-700"/></div>}
             </div>
             
             <div className="flex-grow px-8 pt-8 pb-12 text-center text-gray-800">

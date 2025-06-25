@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Linkedin, Twitter, Github, Globe, PlusCircle, Trash2, Instagram, Facebook, Palette, User, Phone, Link as LinkIcon, ImageUp, Repeat } from 'lucide-react';
+import { Linkedin, Twitter, Github, Globe, PlusCircle, Trash2, Instagram, Facebook, Palette, User, Phone, Link as LinkIcon, ImageUp, Repeat, Mail, MapPin } from 'lucide-react';
 import type { SocialNetwork } from '@/lib/types';
 
 const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
@@ -31,10 +31,10 @@ const formSchema = z.object({
   department: z.string().optional(),
   bio: z.string().optional(),
   bioSize: z.enum(['sm', 'base', 'lg']).optional(),
-  phone: z.string().optional(),
-  email: z.string().email('Invalid email address').optional(),
-  website: z.string().url('Invalid URL').optional(),
-  address: z.string().optional(),
+  phones: z.array(z.object({ id: z.string(), value: z.string().min(1, 'Phone cannot be empty.') })).optional(),
+  emails: z.array(z.object({ id: z.string(), value: z.string().email('Invalid email address.') })).optional(),
+  websites: z.array(z.object({ id: z.string(), value: z.string().url('Invalid URL.') })).optional(),
+  addresses: z.array(z.object({ id: z.string(), value: z.string().min(1, 'Address cannot be empty.') })).optional(),
   profileImageUrl: z.string().url('Invalid URL').optional(),
   primaryColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
   secondaryColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
@@ -70,10 +70,14 @@ const colorPalettes = [
 ];
 
 export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
-  const { fields, append, remove } = useFieldArray({
+  const { fields: socialFields, append: appendSocial, remove: removeSocial } = useFieldArray({
     control: form.control,
     name: 'socials',
   });
+  const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({ control: form.control, name: 'phones' });
+  const { fields: emailFields, append: appendEmail, remove: removeEmail } = useFieldArray({ control: form.control, name: 'emails' });
+  const { fields: websiteFields, append: appendWebsite, remove: removeWebsite } = useFieldArray({ control: form.control, name: 'websites' });
+  const { fields: addressFields, append: appendAddress, remove: removeAddress } = useFieldArray({ control: form.control, name: 'addresses' });
 
   const swapColors = () => {
     const primary = form.getValues('primaryColor');
@@ -234,11 +238,100 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                     </div>
                 </div>
                 </AccordionTrigger>
-                <AccordionContent className="pt-6 space-y-4">
-                    <FormField control={form.control} name="phone" render={({ field }) => (<FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input placeholder="+1 123 456 7890" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input placeholder="jane.doe@example.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="website" render={({ field }) => (<FormItem><FormLabel>Website</FormLabel><FormControl><Input placeholder="https://your-website.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="address" render={({ field }) => (<FormItem><FormLabel>Address</FormLabel><FormControl><Input placeholder="123 Main St, Anytown" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <AccordionContent className="pt-6 space-y-6">
+                  {/* Phone Numbers */}
+                  <div className="space-y-2">
+                    <FormLabel>Phone Numbers</FormLabel>
+                    {phoneFields.map((field, index) => (
+                      <div key={field.id} className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <FormField
+                          control={form.control}
+                          name={`phones.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormControl>
+                                <Input placeholder="+1 123 456 7890" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removePhone(index)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendPhone({ id: new Date().toISOString(), value: '' })} className='w-full'>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Add Phone
+                    </Button>
+                  </div>
+
+                  {/* Email Addresses */}
+                  <div className="space-y-2">
+                    <FormLabel>Email Addresses</FormLabel>
+                    {emailFields.map((field, index) => (
+                      <div key={field.id} className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <FormField control={form.control} name={`emails.${index}.value`} render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl><Input placeholder="jane.doe@example.com" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeEmail(index)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendEmail({ id: new Date().toISOString(), value: '' })} className='w-full'>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Add Email
+                    </Button>
+                  </div>
+
+                  {/* Websites */}
+                  <div className="space-y-2">
+                    <FormLabel>Websites</FormLabel>
+                    {websiteFields.map((field, index) => (
+                      <div key={field.id} className="flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-muted-foreground" />
+                        <FormField control={form.control} name={`websites.${index}.value`} render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl><Input placeholder="https://your-website.com" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeWebsite(index)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendWebsite({ id: new Date().toISOString(), value: '' })} className='w-full'>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Add Website
+                    </Button>
+                  </div>
+
+                  {/* Addresses */}
+                  <div className="space-y-2">
+                    <FormLabel>Addresses</FormLabel>
+                    {addressFields.map((field, index) => (
+                      <div key={field.id} className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        <FormField control={form.control} name={`addresses.${index}.value`} render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl><Input placeholder="123 Main St, Anytown" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )} />
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeAddress(index)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendAddress({ id: new Date().toISOString(), value: '' })} className='w-full'>
+                      <PlusCircle className="mr-2 h-4 w-4" /> Add Address
+                    </Button>
+                  </div>
                 </AccordionContent>
             </div>
           </AccordionItem>
@@ -255,7 +348,7 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                 </div>
                 </AccordionTrigger>
                 <AccordionContent className="pt-6 space-y-4">
-                    {fields.map((field, index) => (
+                    {socialFields.map((field, index) => (
                         <div key={field.id} className="flex items-end gap-2 p-4 border rounded-md relative">
                             <FormField
                                 control={form.control}
@@ -297,12 +390,12 @@ export function VCardForm({ form, onSubmit, isEditing }: VCardFormProps) {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                            <Button type="button" variant="ghost" size="icon" onClick={() => removeSocial(index)}>
                                 <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                         </div>
                     ))}
-                    <Button type="button" variant="outline" onClick={() => append({ id: new Date().toISOString(), network: 'website', url: '' })} className='w-full' >
+                    <Button type="button" variant="outline" onClick={() => appendSocial({ id: new Date().toISOString(), network: 'website', url: '' })} className='w-full' >
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Add Social Link
                     </Button>

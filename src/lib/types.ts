@@ -6,6 +6,11 @@ export interface SocialLink {
   url: string;
 }
 
+export interface ContactDetail {
+  id: string;
+  value: string;
+}
+
 export type VCardSubscription = 'Basic' | 'Top' | 'Enterprise';
 export type BioSize = 'sm' | 'base' | 'lg';
 
@@ -16,10 +21,10 @@ export interface VCard {
   jobTitle: string;
   company: string;
   department: string;
-  phone: string;
-  email: string;
-  website: string;
-  address: string;
+  phones: ContactDetail[];
+  emails: ContactDetail[];
+  websites: ContactDetail[];
+  addresses: ContactDetail[];
   socials: SocialLink[];
   profileImageUrl: string;
   bio: string;

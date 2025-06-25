@@ -336,21 +336,30 @@ function VCardTableRow({ vcard, isSelected, onToggleSelect }: { vcard: VCard, is
 
 
   const generateVcf = (card: VCard) => {
-    const socialLinks = card.socials.map(s => `URL:${s.url}`).join('\\n');
+    const socialLinks = (card.socials || []).map(s => `URL:${s.url}`).join('\\n');
     const orgValue = [card.company, card.department].filter(Boolean).join(';');
-    return `BEGIN:VCARD
-VERSION:3.0
-N:${card.lastName};${card.firstName}
-FN:${card.firstName} ${card.lastName}
-TITLE:${card.jobTitle}
-ORG:${orgValue}
-TEL;TYPE=WORK,VOICE:${card.phone}
-EMAIL:${card.email}
-URL:${card.website}
-ADR;TYPE=HOME:;;${card.address}
-PHOTO;TYPE=JPEG:${card.profileImageUrl}
-${socialLinks}
-END:VCARD`;
+    const phones = (card.phones || []).map(p => `TEL:${p.value}`).join('\\n');
+    const emails = (card.emails || []).map(e => `EMAIL:${e.value}`).join('\\n');
+    const websites = (card.websites || []).map(w => `URL:${w.value}`).join('\\n');
+    const addresses = (card.addresses || []).map(a => `ADR;TYPE=HOME:;;${a.value}`).join('\\n');
+
+    const vcfParts = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `N:${card.lastName};${card.firstName}`,
+        `FN:${card.firstName} ${card.lastName}`,
+        `TITLE:${card.jobTitle}`,
+        `ORG:${orgValue}`,
+        phones,
+        emails,
+        websites,
+        addresses,
+        `PHOTO;TYPE=JPEG:${card.profileImageUrl}`,
+        socialLinks,
+        'END:VCARD'
+    ];
+    
+    return vcfParts.filter(part => part && part.split(/:(.*)/s)[1].trim() !== '').join('\\n');
   };
 
   const vcfData = generateVcf(vcard);

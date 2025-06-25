@@ -14,10 +14,10 @@ const initialData: VCard[] = [
     jobTitle: 'Account Manager',
     company: 'Innovate Inc.',
     department: 'Sales',
-    phone: '+1 555-100-1000',
-    email: 'john.carlson@innovate.co',
-    website: 'https://innovate.co',
-    address: '123 Main St, Anytown',
+    phones: [{ id: 'p1', value: '+1 555-100-1000' }],
+    emails: [{ id: 'e1', value: 'john.carlson@innovate.co' }],
+    websites: [{ id: 'w1', value: 'https://innovate.co' }],
+    addresses: [{ id: 'a1', value: '123 Main St, Anytown' }],
     bio: "As an account manager, I thrive on building lasting relationships and helping clients to succeed. Let's connect and grow together!",
     profileImageUrl: 'https://placehold.co/200x200.png',
     socials: [
@@ -36,10 +36,10 @@ const initialData: VCard[] = [
     jobTitle: 'Lead Engineer',
     company: 'Tech Solutions',
     department: 'Core Infrastructure',
-    phone: '+1 987 654 3210',
-    email: 'jane.doe@tech.so',
-    website: 'https://tech.so',
-    address: '456 Code Ave, Silicon Valley',
+    phones: [{ id: 'p1', value: '+1 987 654 3210' }],
+    emails: [{ id: 'e1', value: 'jane.doe@tech.so' }],
+    websites: [{ id: 'w1', value: 'https://tech.so' }],
+    addresses: [{ id: 'a1', value: '456 Code Ave, Silicon Valley' }],
     bio: 'Innovating and building scalable solutions for the future of tech. Passionate about open source and collaboration.',
     profileImageUrl: 'https://placehold.co/200x200.png',
     socials: [
@@ -83,7 +83,12 @@ export const useVCardStore = () => {
   }, [vcards]);
 
   const addVCard = (vcard: Omit<VCard, 'id' | 'tags' | 'subscription'>) => {
-    const newVCard: VCard = { ...vcard, id: new Date().toISOString(), subscription: 'Basic', tags: vcard.company ? [vcard.company] : [] };
+    const newVCard: VCard = { 
+      ...vcard, 
+      id: new Date().toISOString(), 
+      subscription: 'Basic', 
+      tags: vcard.company ? [vcard.company] : [],
+    };
     const updatedVcards = [newVCard, ...vcards];
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: "vCard created successfully." });

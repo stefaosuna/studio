@@ -63,17 +63,10 @@ function TopBar() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" onClick={() => setIsScannerOpen(true)}>
-                                <ScanLine className="h-5 w-5" />
-                                <span className="sr-only">Scan QR Code</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Scan Ticket</p>
-                        </TooltipContent>
-                    </Tooltip>
+                    <Button variant="ghost" size="icon" onClick={() => setIsScannerOpen(true)}>
+                        <ScanLine className="h-5 w-5" />
+                        <span className="sr-only">Scan Ticket</span>
+                    </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="rounded-full">

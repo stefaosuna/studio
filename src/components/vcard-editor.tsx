@@ -8,8 +8,8 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 
 import { useVCardStore } from '@/hooks/use-vcard-store';
-import { VCardForm } from './vcard-form';
-import { IphoneMockup } from './iphone-mockup';
+import { VCardForm } from '@/components/vcard-form';
+import { IphoneMockup } from '@/components/iphone-mockup';
 import type { VCard } from '@/lib/types';
 
 const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;

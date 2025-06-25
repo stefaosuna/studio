@@ -42,14 +42,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { VCard, EventTicket } from "@/lib/types";
-import { Badge } from "./ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
-import { TicketMockup } from "./ticket-mockup";
+import { TicketMockup } from "@/components/ticket-mockup";
 import { useSearch } from "@/context/search-context";
-import { Checkbox } from "./ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { Input } from "./ui/input";
+import { Input } from "@/components/ui/input";
 
 export function MainDashboard() {
   const { vcards, isLoaded: vcardsLoaded } = useVCardStore();

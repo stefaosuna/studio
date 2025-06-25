@@ -7,8 +7,8 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 
 import { useTicketStore } from '@/hooks/use-ticket-store';
-import { TicketForm } from './ticket-form';
-import { TicketMockup } from './ticket-mockup';
+import { TicketForm } from '@/components/ticket-form';
+import { TicketMockup } from '@/components/ticket-mockup';
 import type { EventTicket } from '@/lib/types';
 
 const formSchema = z.object({

@@ -4,7 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home, Users, Search, Calendar } from "lucide-react";
+import { Home, Users, Search, Calendar, ScanLine } from "lucide-react";
 import {
     SidebarProvider,
     Sidebar,
@@ -23,6 +23,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { useState } from "react";
+import { QrScannerDialog } from "./qr-scanner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const logoUrl = "https://cdn.prod.website-files.com/68521b10d2ddd4340d19900c/68521c1afc95e0d7fae75898_Recurso%202%404x-p-500.png";
 
@@ -41,40 +44,57 @@ function DashboardSearchInput() {
 
 function TopBar() {
     const { state } = useSidebar();
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
     return (
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                 {state === 'collapsed' && (
-                    <Link href="/" className="hidden lg:block">
-                        <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain invert dark:invert-0" />
-                    </Link>
-                )}
-                 <div className="relative flex-1 md:flex-initial">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <DashboardSearchInput />
+        <>
+            <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <div className="flex items-center gap-4">
+                    <SidebarTrigger />
+                    {state === 'collapsed' && (
+                        <Link href="/" className="hidden lg:block">
+                            <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain invert dark:invert-0" />
+                        </Link>
+                    )}
+                    <div className="relative flex-1 md:flex-initial">
+                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <DashboardSearchInput />
+                    </div>
                 </div>
-            </div>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://placehold.co/32x32.png" alt="@user" data-ai-hint="user avatar" />
-                            <AvatarFallback>U</AvatarFallback>
-                        </Avatar>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <ThemeSwitcher />
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </header>
+                <div className="flex items-center gap-2">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" onClick={() => setIsScannerOpen(true)}>
+                                <ScanLine className="h-5 w-5" />
+                                <span className="sr-only">Scan QR Code</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Scan Ticket</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="rounded-full">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src="https://placehold.co/32x32.png" alt="@user" data-ai-hint="user avatar" />
+                                    <AvatarFallback>U</AvatarFallback>
+                                </Avatar>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Profile</DropdownMenuItem>
+                            <DropdownMenuItem>Settings</DropdownMenuItem>
+                            <ThemeSwitcher />
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </header>
+            <QrScannerDialog open={isScannerOpen} onOpenChange={setIsScannerOpen} />
+        </>
     );
 }
 

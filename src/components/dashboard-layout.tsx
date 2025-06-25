@@ -54,7 +54,7 @@ function TopBar() {
                     <SidebarTrigger />
                     {state === 'collapsed' && (
                         <Link href="/" className="hidden lg:block">
-                            <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain invert-0 dark:invert" />
+                            <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain invert dark:invert-0" />
                         </Link>
                     )}
                     <div className="relative flex-1 md:flex-initial">
@@ -114,7 +114,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <SidebarHeader className="border-b">
                         <div className="flex h-16 items-center justify-start px-4">
                             <Link href="/" className="group-data-[state=collapsed]:hidden">
-                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain invert-0 dark:invert" />
+                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain invert dark:invert-0" />
                             </Link>
                         </div>
                     </SidebarHeader>

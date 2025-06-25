@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -10,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, XCircle, Ticket as TicketIcon, Calendar, User, Star } from 'lucide-react';
 import { format } from 'date-fns';
-import { Badge } from './ui/badge';
+import { Badge } from '@/components/ui/badge';
 
 const QR_READER_ID = "qr-reader";
 

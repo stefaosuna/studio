@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import type { PassType } from "@/lib/types";
 
 const formSchema = z.object({
+  eventId: z.string().min(1, 'Event is required'),
   eventName: z.string().min(1, 'Event name is required'),
   ownerName: z.string().min(1, 'Owner name is required'),
   eventDate: z.date({
@@ -39,6 +40,7 @@ type TicketFormProps = {
   form: UseFormReturn<z.infer<typeof formSchema>>;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
   isEditing: boolean;
+  isEventContext: boolean;
 };
 
 const passTypes: PassType[] = ['Basic', 'VIP', 'Staff'];
@@ -52,14 +54,14 @@ const colorPalettes = [
   { name: 'Amber', color: '#f59e0b' },
 ];
 
-export function TicketForm({ form, onSubmit, isEditing }: TicketFormProps) {
+export function TicketForm({ form, onSubmit, isEditing, isEventContext }: TicketFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Event Ticket Details</CardTitle>
-            <CardDescription>Fill in the details to generate a new ticket.</CardDescription>
+            <CardDescription>{isEditing ? 'Update ticket details.' : 'Fill in the details to generate a new ticket.'}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -69,7 +71,7 @@ export function TicketForm({ form, onSubmit, isEditing }: TicketFormProps) {
                 <FormItem>
                   <FormLabel>Event Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Firebase Dev Summit" {...field} />
+                    <Input placeholder="e.g. Firebase Dev Summit" {...field} disabled={isEventContext || isEditing} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -104,6 +106,7 @@ export function TicketForm({ form, onSubmit, isEditing }: TicketFormProps) {
                                     "w-full pl-3 text-left font-normal",
                                     !field.value && "text-muted-foreground"
                                 )}
+                                disabled={isEventContext || isEditing}
                                 >
                                 {field.value ? (
                                     format(field.value, "PPP")
@@ -120,7 +123,7 @@ export function TicketForm({ form, onSubmit, isEditing }: TicketFormProps) {
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) =>
-                                date < new Date(new Date().setHours(0,0,0,0))
+                                isEventContext || isEditing || date < new Date(new Date().setHours(0,0,0,0))
                                 }
                                 initialFocus
                             />

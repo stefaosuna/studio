@@ -9,6 +9,7 @@ const TICKETS_STORAGE_KEY = 'proxity-tickets';
 const initialData: EventTicket[] = [
   {
     id: 't1',
+    eventId: 'evt1',
     eventName: 'Firebase Dev Summit',
     eventDate: new Date('2024-10-26T09:00:00'),
     ownerName: 'Alex Johnson',
@@ -18,6 +19,7 @@ const initialData: EventTicket[] = [
   },
   {
     id: 't2',
+    eventId: 'evt2',
     eventName: 'Next.js Conf',
     eventDate: new Date('2024-11-15T10:00:00'),
     ownerName: 'Samantha Lee',
@@ -63,6 +65,10 @@ export const useTicketStore = () => {
     return tickets.find(ticket => ticket.id === id);
   }, [tickets]);
 
+  const getTicketsByEventId = useCallback((eventId: string) => {
+    return tickets.filter(ticket => ticket.eventId === eventId);
+  }, [tickets]);
+
   const addTicket = (ticket: Omit<EventTicket, 'id' | 'tags'>) => {
     const newTicket: EventTicket = { ...ticket, id: `t-${new Date().toISOString()}`, tags: [], color: ticket.color || '#6366f1' };
     const updatedTickets = [newTicket, ...tickets];
@@ -103,5 +109,5 @@ export const useTicketStore = () => {
     toast({ title: "Success!", description: `Tags added to ${ids.length} ticket(s).` });
   }
 
-  return { tickets, isLoaded, getTicketById, addTicket, updateTicket, deleteTicket, deleteTickets, addTagsToTickets };
+  return { tickets, isLoaded, getTicketById, addTicket, updateTicket, deleteTicket, deleteTickets, addTagsToTickets, getTicketsByEventId };
 };

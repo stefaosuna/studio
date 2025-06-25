@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home, Users, Search } from "lucide-react";
+import { Home, Users, Search, Calendar } from "lucide-react";
 import {
     SidebarProvider,
     Sidebar,
@@ -40,6 +40,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
     const menuItems = [
         { href: '/', label: 'Dashboard', icon: Home, tooltip: 'Dashboard' },
+        { href: '/events', label: 'Events', icon: Calendar, tooltip: 'Events' },
         { href: '/users', label: 'Users', icon: Users, tooltip: 'Users' },
     ];
     

@@ -37,8 +37,17 @@ export interface VCard {
 
 export type PassType = 'VIP' | 'Basic' | 'Staff';
 
+export interface Event {
+  id: string;
+  name: string;
+  date: Date;
+  location: string;
+  tags?: string[];
+}
+
 export interface EventTicket {
   id: string;
+  eventId: string;
   eventName: string;
   eventDate: Date;
   ownerName: string;

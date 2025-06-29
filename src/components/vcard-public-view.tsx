@@ -21,31 +21,35 @@ const socialIcons: Record<SocialNetwork, React.ComponentType<{ className?: strin
   facebook: Facebook,
 };
 
-const generateVcf = (card: VCard) => {
-    const socialLinks = (card.socials || []).map(s => `URL:${s.url}`).join('\n');
-    const orgValue = [card.company, card.department].filter(Boolean).join(';');
-    const phones = (card.phones || []).map(p => `TEL:${p.value}`).join('\n');
-    const emails = (card.emails || []).map(e => `EMAIL:${e.value}`).join('\n');
-    const websites = (card.websites || []).map(w => `URL:${w.value}`).join('\n');
-    const addresses = (card.addresses || []).map(a => `ADR;TYPE=HOME:;;${a.value}`).join('\n');
+const generateVcf = (card: VCard): string => {
+  const parts: string[] = ['BEGIN:VCARD', 'VERSION:3.0'];
 
-    const vcfParts = [
-        'BEGIN:VCARD',
-        'VERSION:3.0',
-        `N:${card.lastName};${card.firstName}`,
-        `FN:${card.firstName} ${card.lastName}`,
-        `TITLE:${card.jobTitle}`,
-        `ORG:${orgValue}`,
-        phones,
-        emails,
-        websites,
-        addresses,
-        `PHOTO;TYPE=JPEG:${card.profileImageUrl}`,
-        socialLinks,
-        'END:VCARD'
-    ];
-    
-    return vcfParts.filter(part => part && part.split(/:(.*)/s)[1]?.trim()).join('\n');
+  // Name
+  parts.push(`N:${card.lastName || ''};${card.firstName || ''};;;`);
+  parts.push(`FN:${card.firstName || ''} ${card.lastName || ''}`);
+
+  // Work
+  if (card.jobTitle) parts.push(`TITLE:${card.jobTitle}`);
+  const orgValue = [card.company, card.department].filter(Boolean).join(';');
+  if (orgValue) parts.push(`ORG:${orgValue}`);
+
+  // Contact
+  (card.phones || []).forEach(p => p.value && parts.push(`TEL;TYPE=CELL:${p.value}`));
+  (card.emails || []).forEach(e => e.value && parts.push(`EMAIL:${e.value}`));
+  (card.addresses || []).forEach(a => a.value && parts.push(`ADR;TYPE=HOME:;;${a.value};;;`));
+  (card.websites || []).forEach(w => w.value && parts.push(`URL:${w.value}`));
+  
+  // Social
+  (card.socials || []).forEach(s => s.url && s.network && parts.push(`X-SOCIALPROFILE;type=${s.network}:${s.url}`));
+
+  // Other
+  if (card.bio) parts.push(`NOTE:${card.bio.replace(/\n/g, '\\n')}`);
+  if (card.profileImageUrl && card.profileImageUrl.startsWith('http')) {
+    parts.push(`PHOTO;VALUE=URI:${card.profileImageUrl}`);
+  }
+
+  parts.push('END:VCARD');
+  return parts.join('\n');
 };
 
 export function VCardPublicView({ vcard }: { vcard: VCard }) {

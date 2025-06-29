@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -50,14 +49,11 @@ export default function LoginPage() {
              <Image
               src={logoUrl}
               alt="Proxity Logo"
-              width={100}
-              height={30}
+              width={130}
+              height={39}
               className="mx-auto"
             />
             <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
-            </p>
           </div>
           <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">

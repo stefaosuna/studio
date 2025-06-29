@@ -16,6 +16,7 @@ const initialData: ClubMember[] = [
     subscriptionStatus: 'Active',
     profileImageUrl: 'https://placehold.co/200x200.png',
     tags: ['Founding Member'],
+    subscriptionDate: new Date('2024-01-15'),
   },
   {
     id: `member-${Date.now()}-sample2`,
@@ -25,6 +26,7 @@ const initialData: ClubMember[] = [
     subscriptionStatus: 'Active',
     profileImageUrl: 'https://placehold.co/200x200.png',
     tags: [],
+    subscriptionDate: new Date('2024-06-05'),
   },
   {
     id: `member-${Date.now()}-sample3`,
@@ -34,6 +36,7 @@ const initialData: ClubMember[] = [
     subscriptionStatus: 'Expired',
     profileImageUrl: 'https://placehold.co/200x200.png',
     tags: ['Prospect'],
+    subscriptionDate: new Date('2024-05-20'),
   },
 ];
 
@@ -48,7 +51,8 @@ export const useMemberStore = () => {
         const parsedMembers: ClubMember[] = JSON.parse(storedMembers);
         const membersWithDates = parsedMembers.map(member => ({
           ...member,
-          birthday: new Date(member.birthday)
+          birthday: new Date(member.birthday),
+          subscriptionDate: member.subscriptionDate ? new Date(member.subscriptionDate) : new Date(),
         }));
         setMembers(membersWithDates);
       } else {

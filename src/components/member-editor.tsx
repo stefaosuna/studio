@@ -11,6 +11,7 @@ import { MemberForm } from '@/components/member-form';
 const formSchema = z.object({
   name: z.string().min(1, 'Member name is required'),
   birthday: z.date({ required_error: "A birth date is required." }),
+  subscriptionDate: z.date({ required_error: "A subscription start date is required." }),
   profileImageUrl: z.string().url('Invalid URL').optional(),
   subscriptionType: z.enum(['Weekly', 'Monthly', 'Yearly']),
   subscriptionStatus: z.enum(['Active', 'Inactive', 'Expired']),
@@ -30,6 +31,7 @@ export function MemberEditor({ memberId }: { memberId?: string }) {
       subscriptionType: 'Monthly',
       subscriptionStatus: 'Active',
       profileImageUrl: 'https://placehold.co/200x200.png',
+      subscriptionDate: new Date(),
     },
   });
 
@@ -37,7 +39,8 @@ export function MemberEditor({ memberId }: { memberId?: string }) {
     if (existingMember) {
       form.reset({
         ...existingMember,
-        birthday: new Date(existingMember.birthday)
+        birthday: new Date(existingMember.birthday),
+        subscriptionDate: existingMember.subscriptionDate ? new Date(existingMember.subscriptionDate) : new Date(),
       });
     }
     setIsMounted(true);

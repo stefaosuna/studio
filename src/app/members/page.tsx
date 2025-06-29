@@ -143,6 +143,7 @@ export default function MembersPage() {
                                         <TableHead className="w-[60px]">Avatar</TableHead>
                                         <TableHead>Name</TableHead>
                                         <TableHead>Subscription</TableHead>
+                                        <TableHead>Subscribed On</TableHead>
                                         <TableHead className="hidden md:table-cell">Status</TableHead>
                                         <TableHead className="hidden lg:table-cell">Birthday</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
@@ -159,7 +160,7 @@ export default function MembersPage() {
                                     />
                                 )) : (
                                     <TableRow>
-                                        <TableCell colSpan={7} className="h-24 text-center">
+                                        <TableCell colSpan={8} className="h-24 text-center">
                                             No members found.
                                         </TableCell>
                                     </TableRow>
@@ -242,6 +243,7 @@ function MemberRow({ member, onDeleteClick, isSelected, onToggleSelect }: { memb
             <TableCell>
                 <Badge variant="default">{member.subscriptionType}</Badge>
             </TableCell>
+            <TableCell className="text-muted-foreground">{format(new Date(member.subscriptionDate), "PPP")}</TableCell>
             <TableCell className="hidden md:table-cell">
                 <Badge variant={getStatusVariant(member.subscriptionStatus)}>{member.subscriptionStatus}</Badge>
             </TableCell>

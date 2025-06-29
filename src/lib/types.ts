@@ -74,4 +74,5 @@ export interface ClubMember {
   subscriptionType: SubscriptionType;
   subscriptionStatus: SubscriptionStatus;
   tags?: string[];
+  subscriptionDate: Date;
 }

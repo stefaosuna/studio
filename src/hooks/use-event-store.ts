@@ -8,14 +8,14 @@ const EVENTS_STORAGE_KEY = 'proxity-events';
 
 const initialData: Event[] = [
   {
-    id: 'evt1',
+    id: 'evt-1719356400000-sample1',
     name: 'Firebase Dev Summit',
     date: new Date('2024-10-26T09:00:00'),
     location: 'Online',
     tags: ['Conference', 'Dev'],
   },
   {
-    id: 'evt2',
+    id: 'evt-1719356400000-sample2',
     name: 'Next.js Conf',
     date: new Date('2024-11-15T10:00:00'),
     location: 'San Francisco, CA',
@@ -58,7 +58,7 @@ export const useEventStore = () => {
   }, [events]);
 
   const addEvent = (event: Omit<Event, 'id' | 'tags'>) => {
-    const newEvent: Event = { ...event, id: `evt-${new Date().toISOString()}`, tags: [] };
+    const newEvent: Event = { ...event, id: `evt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, tags: [] };
     const updatedEvents = [newEvent, ...events];
     updateStorage(updatedEvents);
     toast({ title: "Success!", description: "Event created successfully." });

@@ -9,7 +9,7 @@ const VCARDS_STORAGE_KEY = 'proxity-vcards';
 
 const initialData: VCard[] = [
   {
-    id: '1',
+    id: 'vcard-1719356400000-sample1',
     firstName: 'John',
     lastName: 'Carlson',
     jobTitle: 'Account Manager',
@@ -31,7 +31,7 @@ const initialData: VCard[] = [
     tags: ['Lead', 'Innovate Inc.'],
   },
     {
-    id: '2',
+    id: 'vcard-1719356400000-sample2',
     firstName: 'Jane',
     lastName: 'Doe',
     jobTitle: 'Lead Engineer',
@@ -86,7 +86,7 @@ export const useVCardStore = () => {
   const addVCard = (vcard: Omit<VCard, 'id' | 'tags'>) => {
     const newVCard: VCard = { 
       ...vcard, 
-      id: new Date().toISOString(), 
+      id: `vcard-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, 
       tags: vcard.company ? [vcard.company] : [],
     };
     const updatedVcards = [newVCard, ...vcards];

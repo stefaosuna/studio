@@ -8,8 +8,8 @@ const TICKETS_STORAGE_KEY = 'proxity-tickets';
 
 const initialData: EventTicket[] = [
   {
-    id: 't1',
-    eventId: 'evt1',
+    id: 'tkt-1719356400000-sample1',
+    eventId: 'evt-1719356400000-sample1',
     eventName: 'Firebase Dev Summit',
     eventDate: new Date('2024-10-26T09:00:00'),
     ownerName: 'Alex Johnson',
@@ -22,8 +22,8 @@ const initialData: EventTicket[] = [
     ],
   },
   {
-    id: 't2',
-    eventId: 'evt2',
+    id: 'tkt-1719356400000-sample2',
+    eventId: 'evt-1719356400000-sample2',
     eventName: 'Next.js Conf',
     eventDate: new Date('2024-11-15T10:00:00'),
     ownerName: 'Samantha Lee',
@@ -78,7 +78,7 @@ export const useTicketStore = () => {
   }, [tickets]);
 
   const addTicket = (ticket: Omit<EventTicket, 'id' | 'tags' | 'scanLog'>) => {
-    const newTicket: EventTicket = { ...ticket, id: `t-${new Date().toISOString()}`, tags: [], color: ticket.color || '#6366f1', scanLog: [] };
+    const newTicket: EventTicket = { ...ticket, id: `tkt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, tags: [], color: ticket.color || '#6366f1', scanLog: [] };
     const updatedTickets = [newTicket, ...tickets];
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket created successfully." });

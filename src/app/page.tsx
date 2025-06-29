@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -42,15 +41,7 @@ export default function LoginPage() {
             alt="Proxity Logo"
             width={150}
             height={40}
-            className="object-contain mb-8 dark:invert"
-            />
-            <Image
-            src="https://placehold.co/600x400.png"
-            alt="Digital Abstract"
-            width={600}
-            height={400}
-            className="rounded-lg object-cover"
-            data-ai-hint="digital abstract"
+            className="object-contain mb-8 invert"
             />
             <h2 className="mt-8 text-2xl font-bold text-primary">Your Digital Identity, Reimagined.</h2>
             <p className="mt-2 text-sm text-muted-foreground">

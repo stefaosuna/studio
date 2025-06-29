@@ -25,20 +25,26 @@ export default function TicketPage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-muted/20">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
+      <div className="flex min-h-screen w-full flex-col bg-muted/20">
+         <Header />
+         <main className="flex flex-1 items-center justify-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
+        </main>
       </div>
     );
   }
 
   if (!ticket) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center gap-4 bg-muted/20 text-center">
-        <h1 className="text-2xl font-bold">Ticket not found</h1>
-        <p className="text-muted-foreground">The requested ticket could not be found or has been deleted.</p>
-        <Button asChild>
-            <Link href="/">Return to Dashboard</Link>
-        </Button>
+      <div className="flex min-h-screen w-full flex-col bg-muted/20">
+        <Header />
+        <main className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+            <h1 className="text-2xl font-bold">Ticket not found</h1>
+            <p className="text-muted-foreground">The requested ticket could not be found or has been deleted.</p>
+            <Button asChild>
+                <Link href="/">Return to Dashboard</Link>
+            </Button>
+        </main>
       </div>
     );
   }

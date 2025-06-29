@@ -22,12 +22,12 @@ const socialIcons: Record<SocialNetwork, React.ComponentType<{ className?: strin
 };
 
 const generateVcf = (card: VCard) => {
-    const socialLinks = (card.socials || []).map(s => `URL:${s.url}`).join('\\n');
+    const socialLinks = (card.socials || []).map(s => `URL:${s.url}`).join('\n');
     const orgValue = [card.company, card.department].filter(Boolean).join(';');
-    const phones = (card.phones || []).map(p => `TEL:${p.value}`).join('\\n');
-    const emails = (card.emails || []).map(e => `EMAIL:${e.value}`).join('\\n');
-    const websites = (card.websites || []).map(w => `URL:${w.value}`).join('\\n');
-    const addresses = (card.addresses || []).map(a => `ADR;TYPE=HOME:;;${a.value}`).join('\\n');
+    const phones = (card.phones || []).map(p => `TEL:${p.value}`).join('\n');
+    const emails = (card.emails || []).map(e => `EMAIL:${e.value}`).join('\n');
+    const websites = (card.websites || []).map(w => `URL:${w.value}`).join('\n');
+    const addresses = (card.addresses || []).map(a => `ADR;TYPE=HOME:;;${a.value}`).join('\n');
 
     const vcfParts = [
         'BEGIN:VCARD',
@@ -44,8 +44,8 @@ const generateVcf = (card: VCard) => {
         socialLinks,
         'END:VCARD'
     ];
-
-    return vcfParts.filter(part => part && part.split(':')[1] !== '').join('\\n');
+    
+    return vcfParts.filter(part => part && part.split(/:(.*)/s)[1]?.trim()).join('\n');
 };
 
 export function VCardPublicView({ vcard }: { vcard: VCard }) {
@@ -85,13 +85,6 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
     link.click();
     document.body.removeChild(link);
   };
-  
-  const contactDetails = [
-    ...(phones || []).map((p, i) => ({ icon: Phone, label: i === 0 ? 'Phone' : `Phone ${i + 1}`, value: p.value, href: `tel:${p.value}` })),
-    ...(emails || []).map((e, i) => ({ icon: Mail, label: i === 0 ? 'Email' : `Email ${i + 1}`, value: e.value, href: `mailto:${e.value}` })),
-    ...(addresses || []).map((a, i) => ({ icon: MapPin, label: i === 0 ? 'Location' : `Location ${i + 1}`, value: a.value, href: `https://maps.google.com/?q=${encodeURIComponent(a.value)}`, target: '_blank' })),
-    { icon: Briefcase, label: company, value: jobTitle, href: websites?.[0]?.value, target: '_blank'},
-  ].filter(detail => detail.value);
 
   return (
     <div className="min-h-screen font-sans" style={{ backgroundColor: secondaryColor }}>
@@ -134,24 +127,61 @@ export function VCardPublicView({ vcard }: { vcard: VCard }) {
 
           {bio && <p className={cn("mt-8 text-center max-w-prose mx-auto text-gray-600", bioSizeClass)}>{bio}</p>}
 
-          <div className="mt-8">
-            {contactDetails.map((item, index) => (
-              <React.Fragment key={index}>
-                <a 
-                    href={item.href} 
-                    target={item.target || '_self'}
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-4 py-4"
-                >
+          <div className="mt-8 space-y-2">
+            {jobTitle && company && (
+              <>
+                <div className="flex items-center gap-4 py-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                        <item.icon className="h-6 w-6 text-gray-500" />
+                        <Briefcase className="h-6 w-6 text-gray-500" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-500">{item.label}</p>
+                      <p className="text-sm text-gray-500">{jobTitle}</p>
+                      <p className="font-semibold text-gray-800">{company}</p>
+                    </div>
+                </div>
+                <Separator/>
+              </>
+            )}
+            {(phones || []).map((item, index) => (
+              <React.Fragment key={item.id}>
+                <a href={`tel:${item.value}`} className="flex items-center gap-4 py-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                        <Phone className="h-6 w-6 text-gray-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{index === 0 ? "Phone" : `Phone ${index + 1}`}</p>
                       <p className="font-semibold text-gray-800">{item.value}</p>
                     </div>
                 </a>
-                {index < contactDetails.length - 1 && <Separator />}
+                <Separator/>
+              </React.Fragment>
+            ))}
+             {(emails || []).map((item, index) => (
+              <React.Fragment key={item.id}>
+                <a href={`mailto:${item.value}`} className="flex items-center gap-4 py-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                        <Mail className="h-6 w-6 text-gray-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{index === 0 ? "Email" : `Email ${index + 1}`}</p>
+                      <p className="font-semibold text-gray-800">{item.value}</p>
+                    </div>
+                </a>
+                <Separator/>
+              </React.Fragment>
+            ))}
+             {(addresses || []).map((item, index) => (
+              <React.Fragment key={item.id}>
+                <a href={`https://maps.google.com/?q=${encodeURIComponent(item.value)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 py-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                        <MapPin className="h-6 w-6 text-gray-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{index === 0 ? "Address" : `Address ${index + 1}`}</p>
+                      <p className="font-semibold text-gray-800">{item.value}</p>
+                    </div>
+                </a>
+                <Separator/>
               </React.Fragment>
             ))}
           </div>

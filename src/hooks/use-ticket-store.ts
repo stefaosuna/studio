@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
-import type { EventTicket } from '@/lib/types';
+import type { EventTicket, ScanLogEntry } from '@/lib/types';
 import { toast } from './use-toast';
 
 const TICKETS_STORAGE_KEY = 'proxity-tickets';
@@ -16,6 +16,10 @@ const initialData: EventTicket[] = [
     passType: 'VIP',
     tags: ['Conference', 'Dev'],
     color: '#6366f1',
+    scanLog: [
+      { id: 'log1', timestamp: new Date('2024-10-26T09:05:00'), message: 'Checked In' },
+      { id: 'log2', timestamp: new Date('2024-10-26T11:30:00'), message: 'Accessed VIP Lounge' }
+    ],
   },
   {
     id: 't2',
@@ -26,15 +30,10 @@ const initialData: EventTicket[] = [
     passType: 'Basic',
     tags: ['Conference', 'Web'],
     color: '#8b5cf6',
+    scanLog: [],
   },
 ];
 
-const dateReviver = (key: string, value: any) => {
-  if (key === 'eventDate' && typeof value === 'string') {
-    return new Date(value);
-  }
-  return value;
-};
 
 export const useTicketStore = () => {
   const [tickets, setTickets] = useState<EventTicket[]>([]);
@@ -44,7 +43,16 @@ export const useTicketStore = () => {
     try {
       const storedTickets = localStorage.getItem(TICKETS_STORAGE_KEY);
       if (storedTickets) {
-        setTickets(JSON.parse(storedTickets, dateReviver));
+        const parsedTickets: EventTicket[] = JSON.parse(storedTickets);
+        const ticketsWithDates = parsedTickets.map(ticket => ({
+          ...ticket,
+          eventDate: new Date(ticket.eventDate),
+          scanLog: (ticket.scanLog || []).map(log => ({
+            ...log,
+            timestamp: new Date(log.timestamp)
+          }))
+        }));
+        setTickets(ticketsWithDates);
       } else {
         setTickets(initialData);
         localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify(initialData));
@@ -69,8 +77,8 @@ export const useTicketStore = () => {
     return tickets.filter(ticket => ticket.eventId === eventId);
   }, [tickets]);
 
-  const addTicket = (ticket: Omit<EventTicket, 'id' | 'tags'>) => {
-    const newTicket: EventTicket = { ...ticket, id: `t-${new Date().toISOString()}`, tags: [], color: ticket.color || '#6366f1' };
+  const addTicket = (ticket: Omit<EventTicket, 'id' | 'tags' | 'scanLog'>) => {
+    const newTicket: EventTicket = { ...ticket, id: `t-${new Date().toISOString()}`, tags: [], color: ticket.color || '#6366f1', scanLog: [] };
     const updatedTickets = [newTicket, ...tickets];
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket created successfully." });
@@ -108,6 +116,26 @@ export const useTicketStore = () => {
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: `Tags added to ${ids.length} ticket(s).` });
   }
+  
+  const addScanLogEntry = (ticketId: string, message: string) => {
+    const newLogEntry: ScanLogEntry = {
+        id: `log-${new Date().toISOString()}`,
+        timestamp: new Date(),
+        message,
+    };
 
-  return { tickets, isLoaded, getTicketById, addTicket, updateTicket, deleteTicket, deleteTickets, addTagsToTickets, getTicketsByEventId };
+    const updatedTickets = tickets.map(ticket => {
+        if (ticket.id === ticketId) {
+            const existingLog = ticket.scanLog || [];
+            return { ...ticket, scanLog: [newLogEntry, ...existingLog] };
+        }
+        return ticket;
+    });
+
+    updateStorage(updatedTickets);
+    toast({ title: "Log Entry Added", description: `"${message}" was added to the ticket's log.` });
+  };
+
+
+  return { tickets, isLoaded, getTicketById, addTicket, updateTicket, deleteTicket, deleteTickets, addTagsToTickets, getTicketsByEventId, addScanLogEntry };
 };

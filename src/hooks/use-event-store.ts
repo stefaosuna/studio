@@ -23,13 +23,6 @@ const initialData: Event[] = [
   },
 ];
 
-const dateReviver = (key: string, value: any) => {
-  if (key === 'date' && typeof value === 'string') {
-    return new Date(value);
-  }
-  return value;
-};
-
 export const useEventStore = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -38,7 +31,12 @@ export const useEventStore = () => {
     try {
       const storedEvents = localStorage.getItem(EVENTS_STORAGE_KEY);
       if (storedEvents) {
-        setEvents(JSON.parse(storedEvents, dateReviver));
+        const parsedEvents: Event[] = JSON.parse(storedEvents);
+        const eventsWithDates = parsedEvents.map(event => ({
+            ...event,
+            date: new Date(event.date)
+        }));
+        setEvents(eventsWithDates);
       } else {
         setEvents(initialData);
         localStorage.setItem(EVENTS_STORAGE_KEY, JSON.stringify(initialData));

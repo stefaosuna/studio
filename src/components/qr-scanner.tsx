@@ -5,20 +5,25 @@ import { useEffect, useState, useRef } from 'react';
 import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode';
 import { useTicketStore } from '@/hooks/use-ticket-store';
 import { toast } from '@/hooks/use-toast';
-import type { EventTicket } from '@/lib/types';
+import type { EventTicket, ScanLogEntry } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, Ticket as TicketIcon, Calendar, User, Star } from 'lucide-react';
+import { CheckCircle2, XCircle, Ticket as TicketIcon, Calendar, User, Star, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
 
 const QR_READER_ID = "qr-reader";
 
 export function QrScannerDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
-    const { getTicketById } = useTicketStore();
+    const { getTicketById, addScanLogEntry } = useTicketStore();
     const [scanResult, setScanResult] = useState<EventTicket | null>(null);
     const [scanError, setScanError] = useState<string | null>(null);
+    const [logMessage, setLogMessage] = useState<string>("");
     const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
 
     useEffect(() => {
@@ -58,10 +63,7 @@ export function QrScannerDialog({ open, onOpenChange }: { open: boolean, onOpenC
             }
         };
 
-        const qrCodeErrorCallback = (errorMessage: string) => {
-            // This callback can be used for debugging, but is often noisy.
-            // console.warn(`QR Code no longer in view. ${errorMessage}`);
-        };
+        const qrCodeErrorCallback = (errorMessage: string) => {};
 
         const startScanner = async () => {
             if (!document.getElementById(QR_READER_ID)) {
@@ -89,7 +91,6 @@ export function QrScannerDialog({ open, onOpenChange }: { open: boolean, onOpenC
             }
         };
         
-        // Use a small timeout to ensure the dialog and DOM element are ready
         const timer = setTimeout(startScanner, 100);
 
         return () => {
@@ -104,16 +105,35 @@ export function QrScannerDialog({ open, onOpenChange }: { open: boolean, onOpenC
     const handleClose = () => {
         setScanResult(null);
         setScanError(null);
+        setLogMessage("");
         onOpenChange(false);
     }
     
     const resetScanner = () => {
         setScanResult(null);
         setScanError(null);
+        setLogMessage("");
         if (html5QrCodeRef.current && html5QrCodeRef.current.getState() === Html5QrcodeScannerState.PAUSED) {
             html5QrCodeRef.current.resume();
         }
     }
+
+    const handleAddLog = () => {
+        if (!logMessage || !scanResult) return;
+        addScanLogEntry(scanResult.id, logMessage);
+
+        const newLogEntry: ScanLogEntry = {
+            id: `log-${new Date().toISOString()}`,
+            timestamp: new Date(),
+            message: logMessage,
+        };
+        setScanResult(prevResult => {
+            if (!prevResult) return null;
+            const updatedLog = [newLogEntry, ...(prevResult.scanLog || [])];
+            return { ...prevResult, scanLog: updatedLog };
+        });
+        setLogMessage("");
+    };
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
@@ -128,18 +148,55 @@ export function QrScannerDialog({ open, onOpenChange }: { open: boolean, onOpenC
                     <div id={QR_READER_ID} className="w-full rounded-md border" />
                 </div>
                 {scanResult && (
-                    <Alert variant="default" className="border-green-500">
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        <AlertTitle className="text-green-600">Ticket Valid!</AlertTitle>
-                        <AlertDescription>
-                            <div className="space-y-2 mt-2">
-                                <p className="flex items-center"><TicketIcon className="mr-2 h-4 w-4" /><strong>Event:</strong>&nbsp;{scanResult.eventName}</p>
-                                <p className="flex items-center"><User className="mr-2 h-4 w-4" /><strong>Attendee:</strong>&nbsp;{scanResult.ownerName}</p>
-                                <p className="flex items-center"><Calendar className="mr-2 h-4 w-4" /><strong>Date:</strong>&nbsp;{format(new Date(scanResult.eventDate), "PPP")}</p>
-                                <p className="flex items-center"><Star className="mr-2 h-4 w-4" /><strong>Pass:</strong>&nbsp;<Badge variant={scanResult.passType === 'VIP' ? 'default' : 'secondary'}>{scanResult.passType}</Badge></p>
-                            </div>
-                        </AlertDescription>
-                    </Alert>
+                    <>
+                        <Alert variant="default" className="border-green-500">
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            <AlertTitle className="text-green-600">Ticket Valid!</AlertTitle>
+                            <AlertDescription>
+                                <div className="space-y-2 mt-2">
+                                    <p className="flex items-center"><TicketIcon className="mr-2 h-4 w-4" /><strong>Event:</strong>&nbsp;{scanResult.eventName}</p>
+                                    <p className="flex items-center"><User className="mr-2 h-4 w-4" /><strong>Attendee:</strong>&nbsp;{scanResult.ownerName}</p>
+                                    <p className="flex items-center"><Calendar className="mr-2 h-4 w-4" /><strong>Date:</strong>&nbsp;{format(new Date(scanResult.eventDate), "PPP")}</p>
+                                    <p className="flex items-center"><Star className="mr-2 h-4 w-4" /><strong>Pass:</strong>&nbsp;<Badge variant={scanResult.passType === 'VIP' ? 'default' : 'secondary'}>{scanResult.passType}</Badge></p>
+                                </div>
+                            </AlertDescription>
+                        </Alert>
+
+                        <Card className="mt-4">
+                            <CardHeader>
+                                <CardTitle className="flex items-center text-base"><Clock className="mr-2 h-4 w-4" /> Scan History</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={logMessage}
+                                            onChange={(e) => setLogMessage(e.target.value)}
+                                            placeholder="e.g. Checked In"
+                                            onKeyDown={(e) => e.key === 'Enter' && handleAddLog()}
+                                        />
+                                        <Button onClick={handleAddLog} disabled={!logMessage}>Add Log</Button>
+                                    </div>
+                                    <ScrollArea className="h-32 rounded-md border p-2">
+                                        {(scanResult.scanLog && scanResult.scanLog.length > 0) ? (
+                                            <div className="space-y-3">
+                                                {scanResult.scanLog.map(log => (
+                                                    <div key={log.id} className="text-sm">
+                                                        <p className="font-medium">{log.message}</p>
+                                                        <p className="text-xs text-muted-foreground">{format(new Date(log.timestamp), "PPp")}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full">
+                                                <p className="text-sm text-muted-foreground">No scan history for this ticket.</p>
+                                            </div>
+                                        )}
+                                    </ScrollArea>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </>
                 )}
                 {scanError && (
                      <Alert variant="destructive">

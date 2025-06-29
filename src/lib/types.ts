@@ -45,6 +45,12 @@ export interface Event {
   tags?: string[];
 }
 
+export interface ScanLogEntry {
+  id: string;
+  timestamp: Date;
+  message: string;
+}
+
 export interface EventTicket {
   id: string;
   eventId: string;
@@ -54,4 +60,5 @@ export interface EventTicket {
   passType: PassType;
   tags?: string[];
   color?: string;
+  scanLog?: ScanLogEntry[];
 }

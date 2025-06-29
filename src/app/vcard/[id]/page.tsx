@@ -42,7 +42,7 @@ export default function VCardPage() {
             <h1 className="text-2xl font-bold">vCard not found</h1>
             <p className="text-muted-foreground">The requested vCard could not be found or has been deleted.</p>
             <Button asChild>
-                <Link href="/">Return to Dashboard</Link>
+                <Link href="/dashboard">Return to Dashboard</Link>
             </Button>
         </main>
       </div>

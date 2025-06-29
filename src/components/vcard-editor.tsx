@@ -98,7 +98,7 @@ export function VCardEditor({ vcardId }: { vcardId?: string }) {
     } else {
       addVCard(cardData);
     }
-    router.push('/');
+    router.push('/dashboard');
   };
 
   if (!isMounted) {

@@ -42,7 +42,7 @@ export default function TicketPage() {
             <h1 className="text-2xl font-bold">Ticket not found</h1>
             <p className="text-muted-foreground">The requested ticket could not be found or has been deleted.</p>
             <Button asChild>
-                <Link href="/">Return to Dashboard</Link>
+                <Link href="/dashboard">Return to Dashboard</Link>
             </Button>
         </main>
       </div>

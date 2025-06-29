@@ -53,7 +53,7 @@ function TopBar() {
                 <div className="flex items-center gap-4">
                     <SidebarTrigger />
                     {state === 'collapsed' && (
-                        <Link href="/" className="hidden lg:block">
+                        <Link href="/dashboard" className="hidden lg:block">
                             <Image src={logoUrl} alt="Proxity Logo" width={28} height={28} className="object-contain dark:invert-0 invert" />
                         </Link>
                     )}
@@ -97,14 +97,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
 
     const menuItems = [
-        { href: '/', label: 'Dashboard', icon: Home, tooltip: 'Dashboard' },
+        { href: '/dashboard', label: 'Dashboard', icon: Home, tooltip: 'Dashboard' },
         { href: '/metrics', label: 'Metrics', icon: BarChart, tooltip: 'Metrics' },
         { href: '/events', label: 'Events', icon: Calendar, tooltip: 'Events' },
         { href: '/users', label: 'Users', icon: Users, tooltip: 'Users' },
     ];
     
     const isActive = (href: string) => {
-        if (href === '/') return pathname === '/';
+        if (href === '/dashboard') return pathname === '/dashboard';
         return pathname.startsWith(href);
     }
 
@@ -114,7 +114,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <Sidebar>
                     <SidebarHeader className="border-b">
                         <div className="flex h-16 items-center justify-start px-4">
-                            <Link href="/" className="group-data-[state=collapsed]:hidden">
+                            <Link href="/dashboard" className="group-data-[state=collapsed]:hidden">
                                 <Image src={logoUrl} alt="Proxity Logo" width={120} height={25} className="object-contain dark:invert-0 invert" />
                             </Link>
                         </div>

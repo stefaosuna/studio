@@ -151,7 +151,7 @@ export function QrScannerDialog({ open, onOpenChange }: { open: boolean, onOpenC
                                     <p className="flex items-center"><TicketIcon className="mr-2 h-4 w-4" /><strong>Event:</strong>&nbsp;{scanResult.eventName}</p>
                                     <p className="flex items-center"><User className="mr-2 h-4 w-4" /><strong>Attendee:</strong>&nbsp;{scanResult.ownerName}</p>
                                     <p className="flex items-center"><Calendar className="mr-2 h-4 w-4" /><strong>Date:</strong>&nbsp;{format(new Date(scanResult.eventDate), "PPP")}</p>
-                                    <p className="flex items-center"><Star className="mr-2 h-4 w-4" /><strong>Pass:</strong>&nbsp;<Badge variant={scanResult.passType === 'VIP' ? 'default' : 'secondary'}>{scanResult.passType}</Badge></p>
+                                    <div className="flex items-center"><Star className="mr-2 h-4 w-4" /><strong>Pass:</strong>&nbsp;<Badge variant={scanResult.passType === 'VIP' ? 'default' : 'secondary'}>{scanResult.passType}</Badge></div>
                                 </div>
                             </AlertDescription>
                         </Alert>

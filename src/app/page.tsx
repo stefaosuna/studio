@@ -34,24 +34,26 @@ export default function LoginPage() {
 
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="hidden bg-muted lg:flex flex-col items-center justify-center p-8 text-center">
-         <div className="mx-auto w-[350px] space-y-4">
-            <Image
-            src={logoUrl}
-            alt="Proxity Logo"
-            width={150}
-            height={40}
-            className="mx-auto"
-            />
-            <h2 className="mt-8 text-2xl font-bold text-primary">Your Digital Identity, Reimagined.</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-            Create, manage, and share beautiful digital business cards with ease.
-            </p>
+       <div className="hidden lg:block relative">
+          <Image
+            src="https://storage.googleapis.com/aifire.appspot.com/images%2Fpayment-scan.jpeg"
+            alt="A person paying with a phone"
+            data-ai-hint="payment phone"
+            fill
+            className="object-cover"
+            priority
+          />
         </div>
-      </div>
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
+          <div className="grid gap-4 text-center">
+             <Image
+              src={logoUrl}
+              alt="Proxity Logo"
+              width={100}
+              height={30}
+              className="mx-auto"
+            />
             <h1 className="text-3xl font-bold">Login</h1>
             <p className="text-balance text-muted-foreground">
               Enter your email below to login to your account

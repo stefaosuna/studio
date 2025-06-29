@@ -62,3 +62,16 @@ export interface EventTicket {
   color?: string;
   scanLog?: ScanLogEntry[];
 }
+
+export type SubscriptionType = 'Weekly' | 'Monthly' | 'Yearly';
+export type SubscriptionStatus = 'Active' | 'Inactive' | 'Expired';
+
+export interface ClubMember {
+  id: string;
+  name: string;
+  birthday: Date;
+  profileImageUrl?: string;
+  subscriptionType: SubscriptionType;
+  subscriptionStatus: SubscriptionStatus;
+  tags?: string[];
+}

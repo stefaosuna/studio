@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Home, Users, Search, Calendar, ScanLine, BarChart } from "lucide-react";
+import { Home, Users, Search, Calendar, ScanLine, BarChart, Contact } from "lucide-react";
 import {
     SidebarProvider,
     Sidebar,
@@ -101,6 +101,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         { href: '/metrics', label: 'Metrics', icon: BarChart, tooltip: 'Metrics' },
         { href: '/events', label: 'Events', icon: Calendar, tooltip: 'Events' },
         { href: '/users', label: 'Users', icon: Users, tooltip: 'Users' },
+        { href: '/members', label: 'Club Members', icon: Contact, tooltip: 'Club Members' },
     ];
     
     const isActive = (href: string) => {

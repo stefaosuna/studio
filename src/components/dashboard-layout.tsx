@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Home, Users, Search, Calendar, ScanLine } from "lucide-react";
+import { Home, Users, Search, Calendar, ScanLine, BarChart } from "lucide-react";
 import {
     SidebarProvider,
     Sidebar,
@@ -54,7 +54,7 @@ function TopBar() {
                     <SidebarTrigger />
                     {state === 'collapsed' && (
                         <Link href="/" className="hidden lg:block">
-                            <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain invert dark:invert-0" />
+                            <Image src={logoUrl} alt="Cardify Logo" width={28} height={28} className="object-contain dark:invert-0 invert" />
                         </Link>
                     )}
                     <div className="relative flex-1 md:flex-initial">
@@ -98,6 +98,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
     const menuItems = [
         { href: '/', label: 'Dashboard', icon: Home, tooltip: 'Dashboard' },
+        { href: '/metrics', label: 'Metrics', icon: BarChart, tooltip: 'Metrics' },
         { href: '/events', label: 'Events', icon: Calendar, tooltip: 'Events' },
         { href: '/users', label: 'Users', icon: Users, tooltip: 'Users' },
     ];
@@ -114,7 +115,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <SidebarHeader className="border-b">
                         <div className="flex h-16 items-center justify-start px-4">
                             <Link href="/" className="group-data-[state=collapsed]:hidden">
-                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain invert dark:invert-0" />
+                                <Image src={logoUrl} alt="Cardify Logo" width={120} height={25} className="object-contain dark:invert-0 invert" />
                             </Link>
                         </div>
                     </SidebarHeader>

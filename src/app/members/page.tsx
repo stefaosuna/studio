@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -16,22 +17,74 @@ import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+
+function BulkActionToolbar({ selectedCount, onDelete }: { selectedCount: number, onDelete: () => void }) {
+  if (selectedCount === 0) return null;
+
+  return (
+    <div className="flex items-center justify-between w-full bg-card border rounded-lg p-2 lg:p-3 my-4">
+        <div className="text-sm font-medium">
+            <span className="text-primary font-bold">{selectedCount}</span> member(s) selected
+        </div>
+        <div className="flex items-center gap-2">
+            <Button variant="destructive" size="sm" onClick={onDelete}><Trash2 className="mr-2 h-4 w-4" /> Delete Selected</Button>
+        </div>
+    </div>
+  );
+}
+
 
 export default function MembersPage() {
-    const { members, isLoaded, deleteMember } = useMemberStore();
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const { members, isLoaded, deleteMember, deleteMembers } = useMemberStore();
+    const [isSingleDeleteDialogOpen, setIsSingleDeleteDialogOpen] = useState(false);
+    const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
     const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
+
+    const [statusFilter, setStatusFilter] = useState<'all' | ClubMember['subscriptionStatus']>('all');
+    const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
+
+    const filteredMembers = useMemo(() => {
+        if (statusFilter === 'all') {
+            return members;
+        }
+        return members.filter(member => member.subscriptionStatus === statusFilter);
+    }, [members, statusFilter]);
 
     const handleDeleteClick = (memberId: string) => {
         setMemberToDelete(memberId);
-        setIsDeleteDialogOpen(true);
+        setIsSingleDeleteDialogOpen(true);
     };
 
-    const confirmDelete = () => {
+    const confirmSingleDelete = () => {
         if (memberToDelete) {
             deleteMember(memberToDelete);
             setMemberToDelete(null);
-            setIsDeleteDialogOpen(false);
+            setIsSingleDeleteDialogOpen(false);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        deleteMembers(selectedMemberIds);
+        setSelectedMemberIds([]);
+        setIsBulkDeleteDialogOpen(false);
+    };
+
+    const toggleSelectUser = (memberId: string) => {
+        setSelectedMemberIds(prev =>
+            prev.includes(memberId)
+                ? prev.filter(id => id !== memberId)
+                : [...prev, memberId]
+        );
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedMemberIds.length === filteredMembers.length) {
+            setSelectedMemberIds([]);
+        } else {
+            setSelectedMemberIds(filteredMembers.map(member => member.id));
         }
     };
 
@@ -62,10 +115,31 @@ export default function MembersPage() {
                         </Button>
                     </CardHeader>
                     <CardContent>
+                         <Tabs defaultValue="all" onValueChange={(value) => setStatusFilter(value as any)} className="mb-4">
+                            <TabsList>
+                                <TabsTrigger value="all">All</TabsTrigger>
+                                <TabsTrigger value="Active">Active</TabsTrigger>
+                                <TabsTrigger value="Inactive">Inactive</TabsTrigger>
+                                <TabsTrigger value="Expired">Expired</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+
+                        <BulkActionToolbar
+                            selectedCount={selectedMemberIds.length}
+                            onDelete={() => setIsBulkDeleteDialogOpen(true)}
+                        />
+
                          <div className="rounded-lg border">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead className="w-[50px]">
+                                            <Checkbox
+                                                checked={filteredMembers.length > 0 && selectedMemberIds.length === filteredMembers.length}
+                                                onCheckedChange={toggleSelectAll}
+                                                aria-label="Select all rows"
+                                            />
+                                        </TableHead>
                                         <TableHead className="w-[60px]">Avatar</TableHead>
                                         <TableHead>Name</TableHead>
                                         <TableHead>Subscription</TableHead>
@@ -75,12 +149,18 @@ export default function MembersPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                {members.length > 0 ? members.map((member) => (
-                                    <MemberRow key={member.id} member={member} onDeleteClick={handleDeleteClick} />
+                                {filteredMembers.length > 0 ? filteredMembers.map((member) => (
+                                    <MemberRow 
+                                        key={member.id} 
+                                        member={member} 
+                                        onDeleteClick={handleDeleteClick} 
+                                        isSelected={selectedMemberIds.includes(member.id)}
+                                        onToggleSelect={() => toggleSelectUser(member.id)}
+                                    />
                                 )) : (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-24 text-center">
-                                            No members added yet.
+                                        <TableCell colSpan={7} className="h-24 text-center">
+                                            No members found.
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -90,7 +170,7 @@ export default function MembersPage() {
                     </CardContent>
                 </Card>
             </div>
-             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+             <AlertDialog open={isSingleDeleteDialogOpen} onOpenChange={setIsSingleDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -100,7 +180,23 @@ export default function MembersPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+                        <AlertDialogAction onClick={confirmSingleDelete} className="bg-destructive hover:bg-destructive/90">
+                            Yes, delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <AlertDialog open={isBulkDeleteDialogOpen} onOpenChange={setIsBulkDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                           This action cannot be undone. This will permanently delete the {selectedMemberIds.length} selected member(s).
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleBulkDelete} className="bg-destructive hover:bg-destructive/90">
                             Yes, delete
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -110,7 +206,7 @@ export default function MembersPage() {
     );
 }
 
-function MemberRow({ member, onDeleteClick }: { member: ClubMember; onDeleteClick: (id: string) => void }) {
+function MemberRow({ member, onDeleteClick, isSelected, onToggleSelect }: { member: ClubMember; onDeleteClick: (id: string) => void; isSelected: boolean; onToggleSelect: () => void; }) {
     const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(JSON.stringify({ memberId: member.id }))}`;
     
@@ -124,7 +220,14 @@ function MemberRow({ member, onDeleteClick }: { member: ClubMember; onDeleteClic
     };
 
     return (
-        <TableRow>
+        <TableRow data-state={isSelected && "selected"}>
+            <TableCell>
+                <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={onToggleSelect}
+                    aria-label={`Select row for ${member.name}`}
+                />
+            </TableCell>
             <TableCell>
                 <Image
                     src={member.profileImageUrl || "https://placehold.co/80x80.png"}

@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { Calendar, MapPin, PlusCircle, MoreHorizontal, Edit, Trash2, ExternalLink, QrCode } from 'lucide-react';
+import { Calendar, MapPin, PlusCircle, MoreHorizontal, Edit, Trash2, ExternalLink, QrCode, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React, { useState } from 'react';
@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { TicketMockup } from '@/components/ticket-mockup';
+import { TicketLogViewer } from '@/components/ticket-log-viewer';
 
 export default function EventDetailPage() {
     const params = useParams();
@@ -119,6 +120,7 @@ function TicketRow({ ticket }: { ticket: EventTicket }) {
     const { deleteTicket } = useTicketStore();
     const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isLogViewerOpen, setIsLogViewerOpen] = useState(false);
 
     return (
         <TableRow>
@@ -148,6 +150,9 @@ function TicketRow({ ticket }: { ticket: EventTicket }) {
                                 <DialogTrigger asChild>
                                     <DropdownMenuItem><QrCode className="mr-2 h-4 w-4" />Show QR</DropdownMenuItem>
                                 </DialogTrigger>
+                                <DropdownMenuItem onSelect={() => setIsLogViewerOpen(true)}>
+                                    <Clock className="mr-2 h-4 w-4" />View Logs
+                                </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <Link href={`/edit/ticket/${ticket.id}`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
                                 </DropdownMenuItem>
@@ -171,6 +176,7 @@ function TicketRow({ ticket }: { ticket: EventTicket }) {
                        <TicketMockup ticket={ticket} />
                     </DialogContent>
                 </Dialog>
+                <TicketLogViewer ticket={ticket} open={isLogViewerOpen} onOpenChange={setIsLogViewerOpen} />
             </TableCell>
         </TableRow>
     );

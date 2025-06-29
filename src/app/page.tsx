@@ -41,7 +41,7 @@ export default function LoginPage() {
             alt="Proxity Logo"
             width={150}
             height={40}
-            className="object-contain mb-8 dark:invert mx-auto"
+            className="object-contain mb-8 mx-auto"
             />
             <h2 className="mt-8 text-2xl font-bold text-primary">Your Digital Identity, Reimagined.</h2>
             <p className="mt-2 text-sm text-muted-foreground">

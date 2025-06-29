@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SearchProvider, useSearch } from "@/context/search-context";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -55,7 +54,7 @@ function TopBar() {
                     <SidebarTrigger />
                     {state === 'collapsed' && (
                         <Link href="/dashboard" className="hidden lg:block">
-                            <Image src={logoUrl} alt="Proxity Logo" width={28} height={28} className="object-contain dark:invert" />
+                            <Image src={logoUrl} alt="Proxity Logo" width={28} height={28} className="object-contain" />
                         </Link>
                     )}
                     <div className="relative flex-1 md:flex-initial">
@@ -82,7 +81,6 @@ function TopBar() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>Profile</DropdownMenuItem>
                             <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <ThemeSwitcher />
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>Logout</DropdownMenuItem>
                         </DropdownMenuContent>
@@ -117,7 +115,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <SidebarHeader className="border-b">
                         <div className="flex h-16 items-center justify-start px-4">
                             <Link href="/dashboard" className="group-data-[state=collapsed]:hidden">
-                                <Image src={logoUrl} alt="Proxity Logo" width={120} height={25} className="object-contain dark:invert" />
+                                <Image src={logoUrl} alt="Proxity Logo" width={120} height={25} className="object-contain" />
                             </Link>
                         </div>
                     </SidebarHeader>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -34,14 +35,14 @@ export default function LoginPage() {
 
   return (
     <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="hidden bg-primary/10 lg:flex flex-col items-center justify-center p-8 text-center">
+      <div className="hidden bg-muted lg:flex flex-col items-center justify-center p-8 text-center">
          <div className="mx-auto w-[350px] space-y-4">
             <Image
             src={logoUrl}
             alt="Proxity Logo"
             width={150}
             height={40}
-            className="object-contain mb-8 invert dark:invert-0"
+            className="object-contain mb-8 dark:invert"
             />
             <Image
             src="https://placehold.co/600x400.png"

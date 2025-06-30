@@ -18,6 +18,7 @@ const initialData: EventTicket[] = [
     costPrice: 20,
     tags: ['Conference', 'Dev'],
     color: '#6366f1',
+    createdBy: 'Demo User',
     scanLog: [
       { id: 'log1', timestamp: new Date('2024-10-26T09:05:00'), message: 'Checked In' },
       { id: 'log2', timestamp: new Date('2024-10-26T11:30:00'), message: 'Accessed VIP Lounge' }
@@ -34,6 +35,7 @@ const initialData: EventTicket[] = [
     costPrice: 5,
     tags: ['Conference', 'Web'],
     color: '#8b5cf6',
+    createdBy: 'Demo User',
     scanLog: [],
   },
 ];

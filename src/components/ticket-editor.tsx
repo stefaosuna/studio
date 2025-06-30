@@ -89,7 +89,10 @@ export function TicketEditor({ ticketId }: { ticketId?: string }) {
     if (ticketId && existingTicket) {
       updateTicket(ticketId, values);
     } else {
-      addTicket(values);
+      addTicket({
+        ...values,
+        createdBy: 'Demo User',
+      });
     }
     router.push(values.eventId ? `/events/${values.eventId}` : '/');
   };

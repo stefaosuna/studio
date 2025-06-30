@@ -62,6 +62,7 @@ export interface EventTicket {
   costPrice?: number;
   tags?: string[];
   color?: string;
+  createdBy?: string;
   scanLog?: ScanLogEntry[];
 }
 

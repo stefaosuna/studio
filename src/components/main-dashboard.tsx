@@ -272,6 +272,7 @@ function TicketSection({ tickets, selectedIds, onSelectionChange }: { tickets: E
                             </TableHead>
                             <TableHead>Event</TableHead>
                             <TableHead>Owner</TableHead>
+                            <TableHead className="hidden md:table-cell">Created By</TableHead>
                             <TableHead className="hidden md:table-cell">Date</TableHead>
                             <TableHead className="hidden lg:table-cell">Tags</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
@@ -489,6 +490,7 @@ function TicketTableRow({ ticket, isSelected, onToggleSelect }: { ticket: EventT
       </TableCell>
       <TableCell className="font-medium">{ticket.eventName}</TableCell>
       <TableCell className="text-muted-foreground">{ticket.ownerName}</TableCell>
+      <TableCell className="hidden md:table-cell text-muted-foreground">{ticket.createdBy || 'N/A'}</TableCell>
       <TableCell className="hidden md:table-cell text-muted-foreground">
         {format(new Date(ticket.eventDate), "PPP")}
       </TableCell>

@@ -14,7 +14,7 @@ import {
   ChartLegend,
   ChartLegendContent
 } from '@/components/ui/chart';
-import { CreditCard, Ticket, Calendar, Star } from 'lucide-react';
+import { CreditCard, Ticket, Calendar, Star, DollarSign } from 'lucide-react';
 import type { VCardSubscription, PassType } from '@/lib/types';
 
 export function MetricsDashboard() {
@@ -23,6 +23,14 @@ export function MetricsDashboard() {
   const { events } = useEventStore();
 
   const totalVips = tickets.filter(t => t.passType === 'VIP').length;
+
+  const grossSales = useMemo(() => {
+    return tickets.reduce((acc, ticket) => acc + (ticket.publicPrice || 0), 0);
+  }, [tickets]);
+
+  const totalCosts = useMemo(() => {
+    return tickets.reduce((acc, ticket) => acc + (ticket.costPrice || 0), 0);
+  }, [tickets]);
 
   const subscriptionData = useMemo(() => {
     const counts: Record<VCardSubscription, number> = { Basic: 0, Top: 0, Enterprise: 0 };
@@ -66,7 +74,7 @@ export function MetricsDashboard() {
     <div className="container mx-auto max-w-7xl px-4 py-8 space-y-8">
       <h1 className="text-3xl font-bold tracking-tight">Metrics Dashboard</h1>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total vCards</CardTitle>
@@ -95,6 +103,26 @@ export function MetricsDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{events.length}</div>
             <p className="text-xs text-muted-foreground">Events managed</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Gross Sales</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${grossSales.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Total from all public ticket prices</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Costs</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${totalCosts.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Total from all internal ticket costs</p>
           </CardContent>
         </Card>
         <Card>

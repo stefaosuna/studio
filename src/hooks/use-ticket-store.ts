@@ -14,6 +14,8 @@ const initialData: EventTicket[] = [
     eventDate: new Date('2024-10-26T09:00:00'),
     ownerName: 'Alex Johnson',
     passType: 'VIP',
+    publicPrice: 150,
+    costPrice: 20,
     tags: ['Conference', 'Dev'],
     color: '#6366f1',
     scanLog: [
@@ -28,6 +30,8 @@ const initialData: EventTicket[] = [
     eventDate: new Date('2024-11-15T10:00:00'),
     ownerName: 'Samantha Lee',
     passType: 'Basic',
+    publicPrice: 50,
+    costPrice: 5,
     tags: ['Conference', 'Web'],
     color: '#8b5cf6',
     scanLog: [],
@@ -78,7 +82,15 @@ export const useTicketStore = () => {
   }, [tickets]);
 
   const addTicket = (ticket: Omit<EventTicket, 'id' | 'tags' | 'scanLog'>) => {
-    const newTicket: EventTicket = { ...ticket, id: `tkt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, tags: [], color: ticket.color || '#6366f1', scanLog: [] };
+    const newTicket: EventTicket = { 
+      ...ticket, 
+      id: `tkt-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, 
+      tags: [], 
+      color: ticket.color || '#6366f1', 
+      scanLog: [],
+      publicPrice: ticket.publicPrice || 0,
+      costPrice: ticket.costPrice || 0,
+    };
     const updatedTickets = [newTicket, ...tickets];
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket created successfully." });

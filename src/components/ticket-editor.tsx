@@ -23,6 +23,8 @@ const formSchema = z.object({
   passType: z.enum(['VIP', 'Basic', 'Staff'], {
     required_error: "You need to select a pass type.",
   }),
+  publicPrice: z.coerce.number().min(0, "Price must be non-negative").optional(),
+  costPrice: z.coerce.number().min(0, "Cost must be non-negative").optional(),
   color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Invalid hex color').optional(),
 });
 
@@ -54,6 +56,8 @@ export function TicketEditor({ ticketId }: { ticketId?: string }) {
         eventDate: new Date(eventForNewTicket.date),
         ownerName: '',
         passType: 'Basic' as const,
+        publicPrice: 0,
+        costPrice: 0,
         color: '#6366f1',
       };
     }
@@ -62,6 +66,8 @@ export function TicketEditor({ ticketId }: { ticketId?: string }) {
       eventName: '',
       ownerName: '',
       passType: 'Basic' as const,
+      publicPrice: 0,
+      costPrice: 0,
       color: '#6366f1',
     };
   }, [existingTicket, eventForNewTicket]);

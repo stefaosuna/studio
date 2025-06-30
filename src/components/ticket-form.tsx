@@ -2,12 +2,13 @@
 "use client"
 
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Palette } from "lucide-react";
+import { Calendar as CalendarIcon, Palette, DollarSign } from "lucide-react";
 import { type UseFormReturn } from 'react-hook-form';
 import * as z from 'zod';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,6 +34,8 @@ const formSchema = z.object({
   passType: z.enum(['VIP', 'Basic', 'Staff'], {
     required_error: "You need to select a pass type.",
   }),
+  publicPrice: z.coerce.number().min(0, "Price must be non-negative").optional(),
+  costPrice: z.coerce.number().min(0, "Cost must be non-negative").optional(),
   color: z.string().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Invalid hex color').optional(),
 });
 
@@ -202,7 +205,52 @@ export function TicketForm({ form, onSubmit, isEditing, isEventContext, events }
           </CardContent>
         </Card>
 
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="w-full space-y-4">
+          <AccordionItem value="pricing" className="border-none">
+             <div className='p-6 border rounded-lg'>
+              <AccordionTrigger className="py-0 hover:no-underline">
+                <div className="flex items-center gap-4">
+                  <DollarSign className="h-5 w-5 text-primary" />
+                  <div>
+                    <h3 className="font-semibold text-lg">Pricing</h3>
+                    <p className="text-sm text-muted-foreground font-normal">Set public price and internal cost.</p>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="publicPrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Public Price ($)</FormLabel>
+                        <FormControl>
+                           <Input type="number" placeholder="e.g. 50.00" {...field} />
+                        </FormControl>
+                        <FormDescription>The price visible to the public. Set to 0 for free tickets.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="costPrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ticket Cost ($)</FormLabel>
+                        <FormControl>
+                           <Input type="number" placeholder="e.g. 5.00" {...field} />
+                        </FormControl>
+                        <FormDescription>Your internal cost for this ticket. Not public.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </AccordionContent>
+            </div>
+          </AccordionItem>
           <AccordionItem value="design" className="border-none">
             <div className='p-6 border rounded-lg'>
               <AccordionTrigger className="py-0 hover:no-underline">

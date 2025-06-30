@@ -58,6 +58,8 @@ export interface EventTicket {
   eventDate: Date;
   ownerName: string;
   passType: PassType;
+  publicPrice?: number;
+  costPrice?: number;
   tags?: string[];
   color?: string;
   scanLog?: ScanLogEntry[];

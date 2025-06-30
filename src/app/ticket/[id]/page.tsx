@@ -59,7 +59,7 @@ export default function TicketPage() {
             <p className="text-sm text-muted-foreground">
                 Powered by{' '}
                 <Link href="/" className="font-medium text-primary hover:underline">
-                    Proxity
+                    Cardify
                 </Link>
             </p>
         </footer>

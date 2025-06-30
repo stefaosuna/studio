@@ -48,9 +48,9 @@ export default function LoginPage() {
           <div className="grid gap-4 text-center">
              <Image
               src={logoUrl}
-              alt="Proxity Logo"
-              width={130}
-              height={39}
+              alt="Cardify Logo"
+              width={130 * 1.3}
+              height={39 * 1.3}
               className="mx-auto"
             />
             <h1 className="text-3xl font-bold">Login</h1>

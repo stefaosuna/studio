@@ -186,6 +186,7 @@ function VCardSection({ vcards, selectedIds, onSelectionChange }: { vcards: VCar
                         <TableHead className="w-[60px]">Avatar</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead className="hidden md:table-cell">Title</TableHead>
+                        <TableHead className="hidden md:table-cell">Created By</TableHead>
                         <TableHead className="hidden lg:table-cell">Subscription</TableHead>
                         <TableHead className="hidden lg:table-cell">Tags</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
@@ -383,6 +384,7 @@ function VCardTableRow({ vcard, isSelected, onToggleSelect }: { vcard: VCard, is
       </TableCell>
       <TableCell className="font-medium">{`${vcard.firstName} ${vcard.lastName}`}</TableCell>
       <TableCell className="hidden md:table-cell text-muted-foreground">{vcard.jobTitle}</TableCell>
+      <TableCell className="hidden md:table-cell text-muted-foreground">{vcard.createdBy || 'N/A'}</TableCell>
       <TableCell className="hidden lg:table-cell">
         <Badge
           variant={

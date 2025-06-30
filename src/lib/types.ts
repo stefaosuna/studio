@@ -33,6 +33,7 @@ export interface VCard {
   secondaryColor: string;
   subscription: VCardSubscription;
   tags?: string[];
+  createdBy?: string;
 }
 
 export type PassType = 'VIP' | 'Basic' | 'Staff';

@@ -29,6 +29,7 @@ const initialData: VCard[] = [
     secondaryColor: '#ffffff',
     subscription: 'Top',
     tags: ['Lead', 'Innovate Inc.'],
+    createdBy: 'Demo User',
   },
     {
     id: 'vcard-1719356400000-sample2',
@@ -50,6 +51,7 @@ const initialData: VCard[] = [
     secondaryColor: '#7EC09F',
     subscription: 'Enterprise',
     tags: ['Tech', 'Core'],
+    createdBy: 'Demo User',
   }
 ];
 
@@ -88,6 +90,7 @@ export const useVCardStore = () => {
       ...vcard, 
       id: `vcard-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, 
       tags: vcard.company ? [vcard.company] : [],
+      createdBy: 'Demo User',
     };
     const updatedVcards = [newVCard, ...vcards];
     updateStorage(updatedVcards);

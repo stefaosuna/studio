@@ -29,7 +29,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 const QrScannerDialog = dynamic(() => import('@/components/qr-scanner').then(mod => mod.QrScannerDialog), { ssr: false });
 
-const logoUrl = "https://cdn.prod.website-files.com/68521b10d2ddd4340d19900c/68521c1afc95e0d7fae75898_Recurso%202%404x-p-500.png";
+const logoUrl = "https://storage.googleapis.com/studioprod-53303.appspot.com/667c4f803c73797669b7c844/667c4f803c73797669b7c844_9f5c4046-5e55-46f5-b384-9199a57173e4.png";
 
 function DashboardSearchInput() {
     const { searchQuery, setSearchQuery } = useSearch();

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { Event } from '@/lib/types';
 import { toast } from './use-toast';
 
-const EVENTS_STORAGE_KEY = 'proxity-events';
+const EVENTS_STORAGE_KEY = 'cardify-events';
 
 const initialData: Event[] = [
   {

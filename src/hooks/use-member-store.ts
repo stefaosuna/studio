@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { ClubMember } from '@/lib/types';
 import { toast } from './use-toast';
 
-const MEMBERS_STORAGE_KEY = 'proxity-club-members';
+const MEMBERS_STORAGE_KEY = 'cardify-club-members';
 
 const initialData: ClubMember[] = [
   {

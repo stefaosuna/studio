@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export function Header() {
-  const logoUrl = "https://storage.googleapis.com/studioprod-53303.appspot.com/667c4f803c73797669b7c844/667c4f803c73797669b7c844_9f5c4046-5e55-46f5-b384-9199a57173e4.png";
+  const logoUrl = "https://drive.google.com/uc?export=view&id=1-8OTlmJXFZdgOjuHu4vYMqPIw5BDRsRM";
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-start">

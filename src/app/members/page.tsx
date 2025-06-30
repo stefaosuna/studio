@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { MoreHorizontal, PlusCircle, Trash2, Edit, QrCode } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, Trash2, Edit, QrCode, DollarSign } from 'lucide-react';
 
 import { DashboardLayout } from '@/components/dashboard-layout';
 import { useMemberStore } from '@/hooks/use-member-store';
@@ -19,6 +19,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MemberPaymentLog } from '@/components/member-payment-log';
 
 
 function BulkActionToolbar({ selectedCount, onDelete }: { selectedCount: number, onDelete: () => void }) {
@@ -209,6 +210,7 @@ export default function MembersPage() {
 
 function MemberRow({ member, onDeleteClick, isSelected, onToggleSelect }: { member: ClubMember; onDeleteClick: (id: string) => void; isSelected: boolean; onToggleSelect: () => void; }) {
     const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+    const [isPaymentLogOpen, setIsPaymentLogOpen] = useState(false);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(JSON.stringify({ memberId: member.id }))}`;
     
     const getStatusVariant = (status: ClubMember['subscriptionStatus']) => {
@@ -260,6 +262,9 @@ function MemberRow({ member, onDeleteClick, isSelected, onToggleSelect }: { memb
                             <DialogTrigger asChild>
                                 <DropdownMenuItem><QrCode className="mr-2 h-4 w-4" />Show QR</DropdownMenuItem>
                             </DialogTrigger>
+                             <DropdownMenuItem onSelect={() => setIsPaymentLogOpen(true)}>
+                                <DollarSign className="mr-2 h-4 w-4" />Payment History
+                            </DropdownMenuItem>
                              <DropdownMenuItem asChild>
                                 <Link href={`/edit/member/${member.id}`}><Edit className="mr-2 h-4 w-4" />Edit</Link>
                             </DropdownMenuItem>
@@ -280,6 +285,7 @@ function MemberRow({ member, onDeleteClick, isSelected, onToggleSelect }: { memb
                         </div>
                     </DialogContent>
                 </Dialog>
+                {isPaymentLogOpen && <MemberPaymentLog member={member} open={isPaymentLogOpen} onOpenChange={setIsPaymentLogOpen} />}
             </TableCell>
         </TableRow>
     );

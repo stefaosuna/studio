@@ -66,6 +66,13 @@ export interface EventTicket {
 export type SubscriptionType = 'Weekly' | 'Monthly' | 'Yearly';
 export type SubscriptionStatus = 'Active' | 'Inactive' | 'Expired';
 
+export interface PaymentLogEntry {
+  id: string;
+  date: Date;
+  amount: number;
+  description: string;
+}
+
 export interface ClubMember {
   id: string;
   name: string;
@@ -75,4 +82,5 @@ export interface ClubMember {
   subscriptionStatus: SubscriptionStatus;
   tags?: string[];
   subscriptionDate: Date;
+  paymentHistory?: PaymentLogEntry[];
 }

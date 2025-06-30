@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
-import type { ClubMember } from '@/lib/types';
+import type { ClubMember, PaymentLogEntry } from '@/lib/types';
 import { toast } from './use-toast';
 
 const MEMBERS_STORAGE_KEY = 'cardify-club-members';
@@ -17,6 +17,9 @@ const initialData: ClubMember[] = [
     profileImageUrl: 'https://placehold.co/200x200.png',
     tags: ['Founding Member'],
     subscriptionDate: new Date('2024-01-15'),
+    paymentHistory: [
+      { id: `payment-${Date.now()}-1`, date: new Date('2024-01-15'), amount: 120, description: 'Yearly Subscription' },
+    ],
   },
   {
     id: `member-${Date.now()}-sample2`,
@@ -27,6 +30,9 @@ const initialData: ClubMember[] = [
     profileImageUrl: 'https://placehold.co/200x200.png',
     tags: [],
     subscriptionDate: new Date('2024-06-05'),
+     paymentHistory: [
+      { id: `payment-${Date.now()}-2`, date: new Date('2024-06-05'), amount: 15, description: 'Monthly Subscription' },
+    ],
   },
   {
     id: `member-${Date.now()}-sample3`,
@@ -37,6 +43,9 @@ const initialData: ClubMember[] = [
     profileImageUrl: 'https://placehold.co/200x200.png',
     tags: ['Prospect'],
     subscriptionDate: new Date('2024-05-20'),
+    paymentHistory: [
+      { id: `payment-${Date.now()}-3`, date: new Date('2024-05-20'), amount: 5, description: 'Weekly Subscription' },
+    ],
   },
 ];
 
@@ -53,6 +62,10 @@ export const useMemberStore = () => {
           ...member,
           birthday: new Date(member.birthday),
           subscriptionDate: member.subscriptionDate ? new Date(member.subscriptionDate) : new Date(),
+          paymentHistory: (member.paymentHistory || []).map(log => ({
+            ...log,
+            date: new Date(log.date)
+          }))
         }));
         setMembers(membersWithDates);
       } else {
@@ -75,14 +88,14 @@ export const useMemberStore = () => {
     return members.find(member => member.id === id);
   }, [members]);
 
-  const addMember = (member: Omit<ClubMember, 'id' | 'tags'>) => {
-    const newMember: ClubMember = { ...member, id: `member-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, tags: [] };
+  const addMember = (member: Omit<ClubMember, 'id' | 'tags' | 'paymentHistory'>) => {
+    const newMember: ClubMember = { ...member, id: `member-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, tags: [], paymentHistory: [] };
     const updatedMembers = [newMember, ...members];
     updateStorage(updatedMembers);
     toast({ title: "Success!", description: "Member added successfully." });
   };
 
-  const updateMember = (id: string, updatedMember: Partial<ClubMember>) => {
+  const updateMember = (id: string, updatedMember: Partial<Omit<ClubMember, 'paymentHistory'>>) => {
     const updatedMembers = members.map(member =>
       member.id === id ? { ...member, ...updatedMember } : member
     );
@@ -102,5 +115,28 @@ export const useMemberStore = () => {
     toast({ title: "Success!", description: `${ids.length} member(s) deleted.` });
   }
 
-  return { members, isLoaded, getMemberById, addMember, updateMember, deleteMember, deleteMembers };
+  const addPaymentLog = (memberId: string, payment: Omit<PaymentLogEntry, 'id'>) => {
+    const newPaymentEntry: PaymentLogEntry = {
+        ...payment,
+        id: `payment-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+    };
+
+    const updatedMembers = members.map(member => {
+        if (member.id === memberId) {
+            const existingHistory = member.paymentHistory || [];
+            return { 
+                ...member, 
+                paymentHistory: [newPaymentEntry, ...existingHistory],
+                subscriptionStatus: 'Active' as const,
+                subscriptionDate: newPaymentEntry.date
+            };
+        }
+        return member;
+    });
+
+    updateStorage(updatedMembers);
+    toast({ title: "Payment Recorded", description: `Payment of $${payment.amount.toFixed(2)} was recorded.` });
+  };
+
+  return { members, isLoaded, getMemberById, addMember, updateMember, deleteMember, deleteMembers, addPaymentLog };
 };

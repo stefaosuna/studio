@@ -26,6 +26,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SearchProvider, useSearch } from "@/context/search-context";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { QuickActions } from "./quick-actions";
 
 const QrScannerDialog = dynamic(() => import('@/components/qr-scanner').then(mod => mod.QrScannerDialog), { ssr: false });
 
@@ -139,6 +140,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <div className="flex-1 bg-muted/20">
                         {children}
                     </div>
+                    <QuickActions />
                 </SidebarInset>
             </SidebarProvider>
         </SearchProvider>

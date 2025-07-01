@@ -1,8 +1,10 @@
+
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
 import type { EventTicket, ScanLogEntry } from '@/lib/types';
 import { toast } from './use-toast';
+import { addLog } from '@/lib/logger';
 
 const TICKETS_STORAGE_KEY = 'cardify-tickets';
 
@@ -96,26 +98,36 @@ export const useTicketStore = () => {
     const updatedTickets = [newTicket, ...tickets];
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket created successfully." });
+    addLog(newTicket.createdBy || 'System', `Created ticket for ${newTicket.ownerName} in event "${newTicket.eventName}"`);
   };
 
   const updateTicket = (id: string, updatedTicket: Partial<EventTicket>) => {
+    const ticketToUpdate = tickets.find(t => t.id === id);
+    if (!ticketToUpdate) return;
+
     const updatedTickets = tickets.map(ticket =>
       ticket.id === id ? { ...ticket, ...updatedTicket } : ticket
     );
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket updated successfully." });
+    addLog('Demo User', `Updated ticket for ${ticketToUpdate.ownerName}`);
   };
 
   const deleteTicket = (id: string) => {
+    const ticketToDelete = tickets.find(t => t.id === id);
+    if (!ticketToDelete) return;
+    
     const updatedTickets = tickets.filter(ticket => ticket.id !== id);
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: "Ticket deleted successfully." });
+    addLog('Demo User', `Deleted ticket for ${ticketToDelete.ownerName}`);
   };
 
   const deleteTickets = (ids: string[]) => {
     const updatedTickets = tickets.filter(ticket => !ids.includes(ticket.id));
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: `${ids.length} ticket(s) deleted successfully.` });
+    addLog('Demo User', `Deleted ${ids.length} ticket(s)`);
   }
 
   const addTagsToTickets = (ids: string[], tagsToAdd: string[]) => {
@@ -129,25 +141,30 @@ export const useTicketStore = () => {
     });
     updateStorage(updatedTickets);
     toast({ title: "Success!", description: `Tags added to ${ids.length} ticket(s).` });
+    addLog('Demo User', `Added tags to ${ids.length} ticket(s)`);
   }
   
   const addScanLogEntry = (ticketId: string, message: string) => {
+    const ticket = tickets.find(t => t.id === ticketId);
+    if (!ticket) return;
+
     const newLogEntry: ScanLogEntry = {
         id: `log-${new Date().toISOString()}`,
         timestamp: new Date(),
         message,
     };
 
-    const updatedTickets = tickets.map(ticket => {
-        if (ticket.id === ticketId) {
-            const existingLog = ticket.scanLog || [];
-            return { ...ticket, scanLog: [newLogEntry, ...existingLog] };
+    const updatedTickets = tickets.map(t => {
+        if (t.id === ticketId) {
+            const existingLog = t.scanLog || [];
+            return { ...t, scanLog: [newLogEntry, ...existingLog] };
         }
-        return ticket;
+        return t;
     });
 
     updateStorage(updatedTickets);
     toast({ title: "Log Entry Added", description: `"${message}" was added to the ticket's log.` });
+    addLog('System', `Added scan log to ticket for ${ticket.ownerName}: "${message}"`);
   };
 
 

@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { ClubMember, PaymentLogEntry } from '@/lib/types';
 import { toast } from './use-toast';
+import { addLog } from '@/lib/logger';
 
 const MEMBERS_STORAGE_KEY = 'cardify-club-members';
 
@@ -93,49 +94,63 @@ export const useMemberStore = () => {
     const updatedMembers = [newMember, ...members];
     updateStorage(updatedMembers);
     toast({ title: "Success!", description: "Member added successfully." });
+    addLog('Demo User', `Created member: ${newMember.name}`);
   };
 
   const updateMember = (id: string, updatedMember: Partial<Omit<ClubMember, 'paymentHistory'>>) => {
+    const memberToUpdate = members.find(m => m.id === id);
+    if (!memberToUpdate) return;
+    
     const updatedMembers = members.map(member =>
       member.id === id ? { ...member, ...updatedMember } : member
     );
     updateStorage(updatedMembers);
     toast({ title: "Success!", description: "Member updated successfully." });
+    addLog('Demo User', `Updated member: ${memberToUpdate.name}`);
   };
 
   const deleteMember = (id: string) => {
+    const memberToDelete = members.find(m => m.id === id);
+    if (!memberToDelete) return;
+
     const updatedMembers = members.filter(member => member.id !== id);
     updateStorage(updatedMembers);
     toast({ title: "Success!", description: "Member deleted successfully." });
+    addLog('Demo User', `Deleted member: ${memberToDelete.name}`);
   };
   
   const deleteMembers = (ids: string[]) => {
     const updatedMembers = members.filter(member => !ids.includes(member.id));
     updateStorage(updatedMembers);
     toast({ title: "Success!", description: `${ids.length} member(s) deleted.` });
+    addLog('Demo User', `Deleted ${ids.length} member(s)`);
   }
 
   const addPaymentLog = (memberId: string, payment: Omit<PaymentLogEntry, 'id'>) => {
+    const member = members.find(m => m.id === memberId);
+    if (!member) return;
+
     const newPaymentEntry: PaymentLogEntry = {
         ...payment,
         id: `payment-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
     };
 
-    const updatedMembers = members.map(member => {
-        if (member.id === memberId) {
-            const existingHistory = member.paymentHistory || [];
+    const updatedMembers = members.map(m => {
+        if (m.id === memberId) {
+            const existingHistory = m.paymentHistory || [];
             return { 
-                ...member, 
+                ...m, 
                 paymentHistory: [newPaymentEntry, ...existingHistory],
                 subscriptionStatus: 'Active' as const,
                 subscriptionDate: newPaymentEntry.date
             };
         }
-        return member;
+        return m;
     });
 
     updateStorage(updatedMembers);
     toast({ title: "Payment Recorded", description: `Payment of $${payment.amount.toFixed(2)} was recorded.` });
+    addLog('Demo User', `Recorded payment of $${payment.amount.toFixed(2)} for ${member.name}`);
   };
 
   return { members, isLoaded, getMemberById, addMember, updateMember, deleteMember, deleteMembers, addPaymentLog };

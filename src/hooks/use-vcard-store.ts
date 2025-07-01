@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { VCard } from '@/lib/types';
 import { toast } from './use-toast';
+import { addLog } from '@/lib/logger';
 
 const VCARDS_STORAGE_KEY = 'cardify-vcards';
 
@@ -95,26 +96,36 @@ export const useVCardStore = () => {
     const updatedVcards = [newVCard, ...vcards];
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: "vCard created successfully." });
+    addLog(newVCard.createdBy || 'System', `Created vCard: ${newVCard.firstName} ${newVCard.lastName}`);
   };
 
   const updateVCard = (id: string, updatedVcard: Partial<VCard>) => {
+    const vcardToUpdate = vcards.find(v => v.id === id);
+    if (!vcardToUpdate) return;
+    
     const updatedVcards = vcards.map(vcard =>
       vcard.id === id ? { ...vcard, ...updatedVcard } : vcard
     );
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: "vCard updated successfully." });
+    addLog('Demo User', `Updated vCard: ${vcardToUpdate.firstName} ${vcardToUpdate.lastName}`);
   };
 
   const deleteVCard = (id: string) => {
+    const vcardToDelete = vcards.find(v => v.id === id);
+    if (!vcardToDelete) return;
+    
     const updatedVcards = vcards.filter(vcard => vcard.id !== id);
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: "vCard deleted successfully." });
+    addLog('Demo User', `Deleted vCard: ${vcardToDelete.firstName} ${vcardToDelete.lastName}`);
   };
 
   const deleteVCards = (ids: string[]) => {
     const updatedVcards = vcards.filter(vcard => !ids.includes(vcard.id));
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: `${ids.length} vCard(s) deleted.` });
+    addLog('Demo User', `Deleted ${ids.length} vCard(s)`);
   };
   
   const addTagsToVCards = (ids: string[], tagsToAdd: string[]) => {
@@ -128,6 +139,7 @@ export const useVCardStore = () => {
     });
     updateStorage(updatedVcards);
     toast({ title: "Success!", description: `Tags added to ${ids.length} vCard(s).` });
+    addLog('Demo User', `Added tags to ${ids.length} vCard(s)`);
   };
 
   return { vcards, isLoaded, getVCardById, addVCard, updateVCard, deleteVCard, deleteVCards, addTagsToVCards };

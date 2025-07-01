@@ -1,8 +1,10 @@
+
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
 import type { Event } from '@/lib/types';
 import { toast } from './use-toast';
+import { addLog } from '@/lib/logger';
 
 const EVENTS_STORAGE_KEY = 'cardify-events';
 
@@ -62,20 +64,29 @@ export const useEventStore = () => {
     const updatedEvents = [newEvent, ...events];
     updateStorage(updatedEvents);
     toast({ title: "Success!", description: "Event created successfully." });
+    addLog('Demo User', `Created event: "${newEvent.name}"`);
   };
 
   const updateEvent = (id: string, updatedEvent: Partial<Event>) => {
+    const eventToUpdate = events.find(event => event.id === id);
+    if (!eventToUpdate) return;
+
     const updatedEvents = events.map(event =>
       event.id === id ? { ...event, ...updatedEvent } : event
     );
     updateStorage(updatedEvents);
     toast({ title: "Success!", description: "Event updated successfully." });
+    addLog('Demo User', `Updated event: "${eventToUpdate.name}"`);
   };
 
   const deleteEvent = (id: string) => {
+    const eventToDelete = events.find(event => event.id === id);
+    if (!eventToDelete) return;
+
     const updatedEvents = events.filter(event => event.id !== id);
     updateStorage(updatedEvents);
     toast({ title: "Success!", description: "Event deleted successfully." });
+    addLog('Demo User', `Deleted event: "${eventToDelete.name}"`);
   };
 
   return { events, isLoaded, getEventById, addEvent, updateEvent, deleteEvent };

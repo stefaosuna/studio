@@ -1,3 +1,4 @@
+
 export type SocialNetwork = 'website' | 'linkedin' | 'twitter' | 'github' | 'instagram' | 'facebook';
 
 export interface SocialLink {
@@ -87,4 +88,11 @@ export interface ClubMember {
   tags?: string[];
   subscriptionDate: Date;
   paymentHistory?: PaymentLogEntry[];
+}
+
+export interface AppLog {
+  id: string;
+  timestamp: Date;
+  actor: string;
+  message: string;
 }

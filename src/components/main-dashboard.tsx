@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers, ExternalLink, CreditCard, Mail, Tag } from "lucide-react";
+import { MoreHorizontal, PlusCircle, QrCode, Trash2, Edit, Ticket, Layers, ExternalLink, CreditCard, Mail, Tag, ScrollText } from "lucide-react";
 import { useVCardStore } from "@/hooks/use-vcard-store";
 import { useTicketStore } from "@/hooks/use-ticket-store";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,46 @@ import { useSearch } from "@/context/search-context";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { useLogStore } from "@/hooks/use-log-store";
+
+function ActivityLogCard() {
+    const { logs, isLoaded } = useLogStore();
+    const recentLogs = logs.slice(0, 3);
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+                <ScrollText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                <div className="min-h-[72px]">
+                {!isLoaded ? (
+                    <div className="space-y-2 pt-2">
+                        <div className="h-4 bg-muted rounded w-3/4 animate-pulse"></div>
+                        <div className="h-4 bg-muted rounded w-1/2 animate-pulse"></div>
+                        <div className="h-4 bg-muted rounded w-5/6 animate-pulse"></div>
+                    </div>
+                ) : recentLogs.length > 0 ? (
+                    <div className="space-y-3">
+                        {recentLogs.map(log => (
+                            <div key={log.id} className="text-xs">
+                                <p className="font-medium truncate">{log.message}</p>
+                                <p className="text-muted-foreground">{log.actor} - {format(log.timestamp, 'p')}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-xs text-muted-foreground pt-4">No recent activity to show.</p>
+                )}
+                </div>
+                <Button variant="link" asChild className="p-0 h-auto mt-2 text-xs">
+                    <Link href="/logs">View all logs</Link>
+                </Button>
+            </CardContent>
+        </Card>
+    );
+}
 
 export function MainDashboard() {
   const { vcards, isLoaded: vcardsLoaded } = useVCardStore();
@@ -103,6 +143,7 @@ export function MainDashboard() {
             <p className="text-xs text-muted-foreground">Total event tickets currently active.</p>
           </CardContent>
         </Card>
+        <ActivityLogCard />
       </div>
       <VCardSection 
         vcards={filteredVcards} 
